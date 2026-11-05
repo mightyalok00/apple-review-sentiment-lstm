@@ -939,6 +939,15 @@ def generate_transformer_efficiency_matrix(bilstm_metrics, distilbert_metrics):
     }
 
 
+def _get_dict(source: Any, key: str) -> dict[str, Any]:
+    """Helper to safely retrieve a nested dictionary without language server index warnings."""
+    if isinstance(source, dict):
+        val = source.get(key)
+        if isinstance(val, dict):
+            return val
+    return {}
+
+
 def run_comprehensive_evaluation(max_eval_samples=5000, seed=42):
     """
     Executes end-to-end scientific evaluation with cross-validation,
@@ -1082,15 +1091,15 @@ def run_comprehensive_evaluation(max_eval_samples=5000, seed=42):
             })
 
     # Extract dictionary payloads safely
-    lstm_auth: dict[str, Any] = dict(auth_report.get("Bidirectional LSTM (Neural Pipeline)", {}))
-    pipe_res: dict[str, Any] = dict(hard_results.get("Full Pipeline (LSTM + Context Negation)", {}))
-    nb_hard: dict[str, Any] = dict(hard_results.get("Multinomial Naive Bayes", {}))
-    lr_hard: dict[str, Any] = dict(hard_results.get("Logistic Regression (Balanced)", {}))
-    nb_base: dict[str, Any] = dict(baselines.get("Multinomial Naive Bayes", {}))
-    lr_base: dict[str, Any] = dict(baselines.get("Logistic Regression (Balanced)", {}))
-    nb_auth: dict[str, Any] = dict(auth_report.get("Multinomial Naive Bayes", {}))
-    lr_auth: dict[str, Any] = dict(auth_report.get("Logistic Regression (Balanced)", {}))
-    bert_auth: dict[str, Any] = dict(auth_report.get("DistilBERT (Transformer Baseline)", {}))
+    lstm_auth = _get_dict(auth_report, "Bidirectional LSTM (Neural Pipeline)")
+    pipe_res = _get_dict(hard_results, "Full Pipeline (LSTM + Context Negation)")
+    nb_hard = _get_dict(hard_results, "Multinomial Naive Bayes")
+    lr_hard = _get_dict(hard_results, "Logistic Regression (Balanced)")
+    nb_base = _get_dict(baselines, "Multinomial Naive Bayes")
+    lr_base = _get_dict(baselines, "Logistic Regression (Balanced)")
+    nb_auth = _get_dict(auth_report, "Multinomial Naive Bayes")
+    lr_auth = _get_dict(auth_report, "Logistic Regression (Balanced)")
+    bert_auth = _get_dict(auth_report, "DistilBERT (Transformer Baseline)")
 
     # Compile final report payload
     lstm_report = {
@@ -1231,25 +1240,25 @@ def run_comprehensive_evaluation(max_eval_samples=5000, seed=42):
 
     # Print statistical significance summary
     print("\n 🔬 STATISTICAL SIGNIFICANCE (McNemar's Paired Test on 1,000 Authentic Reviews):")
-    auth_tests = lstm_report.get("statistical_tests", {})
-    nb_test: dict[str, Any] = dict(auth_tests.get("authentic_vs_nb_mcnemar", {})) if isinstance(auth_tests, dict) else {}
-    lr_test: dict[str, Any] = dict(auth_tests.get("authentic_vs_lr_mcnemar", {})) if isinstance(auth_tests, dict) else {}
+    auth_tests = _get_dict(lstm_report, "statistical_tests")
+    nb_test = _get_dict(auth_tests, "authentic_vs_nb_mcnemar")
+    lr_test = _get_dict(auth_tests, "authentic_vs_lr_mcnemar")
     print(f"  • BiLSTM vs Naive Bayes:        chi2 = {nb_test.get('chi2_stat', 0.0):.2f}, p = {nb_test.get('p_value', 1.0):.4f} ({'Statistically Significant at p < 0.001' if nb_test.get('p_value', 1.0) < 0.001 else 'Significant'})")
     print(f"  • BiLSTM vs Logistic Regression: chi2 = {lr_test.get('chi2_stat', 0.0):.2f}, p = {lr_test.get('p_value', 1.0):.4f} ({'Statistically Significant at p < 0.001' if lr_test.get('p_value', 1.0) < 0.001 else 'Significant'})")
 
     # Print domain generalization summary
     print("\n 🌐 DOMAIN GENERALIZATION & ZERO-SHOT TRANSFER (Authentic Benchmark):")
-    geo_g = generalization_report.get("geographic_generalization", {})
-    plat_g = generalization_report.get("platform_generalization", {})
-    gen_g = generalization_report.get("product_generation_generalization", {})
+    geo_g = _get_dict(generalization_report, "geographic_generalization")
+    plat_g = _get_dict(generalization_report, "platform_generalization")
+    gen_g = _get_dict(generalization_report, "product_generation_generalization")
     for g_name, g_info in geo_g.items():
         print(f"  • {g_name:<44}: Accuracy = {g_info.get('accuracy', 0.0)*100:.1f}% ({g_info.get('samples', 0)} reviews)")
     print(f"  • Platform Retention (eBay/Flipkart/GSMArena):      {plat_g.get('generalization_retention', 0.0):.1f}% retention")
     print(f"  • Generation Stability (iPhone 15 & 16 Hardware):  {gen_g.get('temporal_transfer_stability', 0.0):.1f}% stability")
 
     # Print lexical diversity summary
-    syn_d = lexical_report.get("synthetic_training_corpus", {})
-    auth_d = lexical_report.get("authentic_benchmark_corpus", {})
+    syn_d = _get_dict(lexical_report, "synthetic_training_corpus")
+    auth_d = _get_dict(lexical_report, "authentic_benchmark_corpus")
     print("\n 📚 LEXICAL DIVERSITY & VOCABULARY AUDIT:")
     print(f"  • Synthetic Training Corpus: Type-Token Ratio (TTR) = {syn_d.get('type_token_ratio_ttr', 0.0):.4f} | Hapax Ratio = {syn_d.get('hapax_legomena_ratio', 0.0)*100:.1f}% | Entropy = {syn_d.get('shannon_entropy_bits', 0.0):.2f} bits")
     print(f"  • Authentic Benchmark:       Type-Token Ratio (TTR) = {auth_d.get('type_token_ratio_ttr', 0.0):.4f} | Hapax Ratio = {auth_d.get('hapax_legomena_ratio', 0.0)*100:.1f}% | Entropy = {auth_d.get('shannon_entropy_bits', 0.0):.2f} bits")
