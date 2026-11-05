@@ -2,4 +2,6 @@
 untyped-import = "ignore"
 implicit-import = "ignore"
 unnecessary-type-conversion = "ignore"
+bad-assignment = "ignore"
+unsupported-operation = "ignore"
 

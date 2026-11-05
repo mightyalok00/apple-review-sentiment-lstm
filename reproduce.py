@@ -72,20 +72,6 @@ def run_reproducibility_pipeline(max_train_samples=3000, epochs=2):
     print(f" Enforced Seed:    42")
     print("-" * 75)
 
-    stages_payload: dict[str, Any] = {}
-    manifest: dict[str, Any] = {
-        "reproduced_at_utc": datetime.now(timezone.utc).isoformat(),
-        "random_seed": 42,
-        "environment": {
-            "python": platform.python_version(),
-            "os": platform.platform(),
-            "processor": platform.processor(),
-        },
-        "stages": stages_payload,
-        "artifacts_checksums": {},
-        "total_execution_seconds": 0.0,
-    }
-
     # Stage 1: Dataset Integrity & Partition Validation
     print("\n[Step 1/5] Validating dataset partition integrity and hash uniqueness...")
     from scraper import count_csv_rows, get_all_csv_paths
@@ -93,7 +79,7 @@ def run_reproducibility_pipeline(max_train_samples=3000, epochs=2):
     csv_paths = get_all_csv_paths()
     total_reviews = sum(count_csv_rows(p) for p in csv_paths)
     print(f"  ✓ Found {len(csv_paths)} CSV partition files with {total_reviews:,} total reviews.")
-    stages_payload["data_validation"] = {
+    data_validation_res = {
         "status": "PASSED",
         "total_reviews": total_reviews,
         "partitions_count": len(csv_paths),
@@ -108,7 +94,7 @@ def run_reproducibility_pipeline(max_train_samples=3000, epochs=2):
         raise RuntimeError("Failed to create data/reviews.parquet")
     pq_size_mb = round(pq_path.stat().st_size / (1024 * 1024), 2)
     print(f"  ✓ reviews.parquet synchronized ({pq_size_mb} MB snappy compressed).")
-    stages_payload["parquet_sync"] = {
+    parquet_sync_res = {
         "status": "PASSED",
         "parquet_size_mb": pq_size_mb,
     }
@@ -119,7 +105,7 @@ def run_reproducibility_pipeline(max_train_samples=3000, epochs=2):
 
     train_res = train_model(epochs=epochs, max_samples=max_train_samples, verbose=0)
     print(f"  ✓ Retraining complete: Accuracy = {train_res['accuracy'] * 100:.2f}% | Loss = {train_res['loss']:.4f}")
-    stages_payload["model_training"] = {
+    model_training_res = {
         "status": "PASSED",
         **train_res,
     }
@@ -130,7 +116,7 @@ def run_reproducibility_pipeline(max_train_samples=3000, epochs=2):
 
     eval_res = run_comprehensive_evaluation(max_eval_samples=max_train_samples)
     print("  ✓ Classical baselines evaluated & confusion matrix generated.")
-    stages_payload["evaluation"] = {
+    evaluation_res = {
         "status": "PASSED",
         "lstm_accuracy": eval_res["lstm_report"]["accuracy"],
         "lstm_macro_f1": eval_res["lstm_report"]["macro_f1"],
@@ -143,20 +129,35 @@ def run_reproducibility_pipeline(max_train_samples=3000, epochs=2):
     test_proc = subprocess.run([sys.executable, "-m", "pytest", "tests/test_pipeline.py", "-q"], capture_output=True, text=True)
     if test_proc.returncode != 0:
         print(f"❌ Pytest failed:\n{test_proc.stdout or test_proc.stderr}")
-        stages_payload["test_suite"] = {"status": "FAILED", "exit_code": test_proc.returncode}
+        test_suite_res = {"status": "FAILED", "exit_code": test_proc.returncode}
     else:
         print("  ✓ All automated unit tests passed.")
-        stages_payload["test_suite"] = {"status": "PASSED", "summary": test_proc.stdout.strip().splitlines()[-1]}
-
-    # Checksum of model weights
-    manifest["artifacts_checksums"] = {
-        "review_lstm_keras_sha256": compute_file_sha256(MODEL_DIR / "review_lstm.keras"),
-        "tokenizer_json_sha256": compute_file_sha256(MODEL_DIR / "tokenizer.json"),
-        "evaluation_report_json_sha256": compute_file_sha256(MODEL_DIR / "evaluation_report.json"),
-    }
+        test_suite_res = {"status": "PASSED", "summary": test_proc.stdout.strip().splitlines()[-1]}
 
     total_sec = round(time.time() - t_start, 2)
-    manifest["total_execution_seconds"] = total_sec
+
+    manifest: dict[str, Any] = {
+        "reproduced_at_utc": datetime.now(timezone.utc).isoformat(),
+        "random_seed": 42,
+        "environment": {
+            "python": platform.python_version(),
+            "os": platform.platform(),
+            "processor": platform.processor(),
+        },
+        "stages": {
+            "data_validation": data_validation_res,
+            "parquet_sync": parquet_sync_res,
+            "model_training": model_training_res,
+            "evaluation": evaluation_res,
+            "test_suite": test_suite_res,
+        },
+        "artifacts_checksums": {
+            "review_lstm_keras_sha256": compute_file_sha256(MODEL_DIR / "review_lstm.keras"),
+            "tokenizer_json_sha256": compute_file_sha256(MODEL_DIR / "tokenizer.json"),
+            "evaluation_report_json_sha256": compute_file_sha256(MODEL_DIR / "evaluation_report.json"),
+        },
+        "total_execution_seconds": total_sec,
+    }
 
     MANIFEST_PATH.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     print(f"\n[OK] Reproducibility manifest saved to: {MANIFEST_PATH}")
