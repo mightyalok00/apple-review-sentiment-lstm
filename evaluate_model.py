@@ -16,11 +16,11 @@ import math
 import os
 import random
 import re
+import statistics
 import sys
 import time
-import statistics
 from pathlib import Path
-from typing import Any, Dict, List, Tuple, cast
+from typing import Any
 
 ROOT = Path(__file__).resolve().parent
 os.environ["KERAS_HOME"] = str(ROOT / ".keras")
@@ -35,7 +35,6 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
     accuracy_score,
     balanced_accuracy_score,
-    classification_report,
     cohen_kappa_score,
     confusion_matrix,
     f1_score,
@@ -135,7 +134,7 @@ def set_seed(seed=42):
     try:
         import tensorflow as tf
         tf.random.set_seed(seed)
-    except Exception:
+    except (ImportError, AttributeError):
         pass
 
 
@@ -181,8 +180,8 @@ def audit_data_leakage(x_train, x_test):
     Scientifically certifies data separation by auditing exact text duplicates
     and 3-gram Jaccard similarity overlap between training and testing splits.
     """
-    train_set = set(str(t).strip().lower() for t in x_train)
-    test_set = set(str(t).strip().lower() for t in x_test)
+    train_set = {str(t).strip().lower() for t in x_train}
+    test_set = {str(t).strip().lower() for t in x_test}
     exact_duplicates = len(train_set.intersection(test_set))
 
     # Token overlap estimation on subset
@@ -200,8 +199,7 @@ def audit_data_leakage(x_train, x_test):
             intersection = len(words_test & words_train)
             union = len(words_test | words_train)
             jacc = intersection / union if union > 0 else 0.0
-            if jacc > max_jacc:
-                max_jacc = jacc
+            max_jacc = max(max_jacc, jacc)
         jaccards.append(max_jacc)
 
     mean_jaccard = round(float(np.mean(jaccards)), 4) if jaccards else 0.0
@@ -229,7 +227,7 @@ def compute_bootstrap_ci(y_true, y_pred, metric_fn, n_bootstraps=500, alpha=0.05
         try:
             s = metric_fn(y_true[idx], y_pred[idx])
             scores.append(float(s))
-        except Exception:
+        except (ValueError, TypeError, ZeroDivisionError):
             continue
     if not scores:
         return 0.0, 1.0
@@ -349,10 +347,9 @@ def evaluate_baselines(x_train, y_train, x_test, y_test):
     skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
     nb_cv_scores: list[float] = []
     lr_cv_scores: list[float] = []
-    train_vec_any = cast(Any, x_train_vec)
-    for train_idx, val_idx in skf.split(train_vec_any, y_train):
-        cv_xt = train_vec_any[train_idx]
-        cv_xv = train_vec_any[val_idx]
+    for train_idx, val_idx in skf.split(x_train_vec, y_train):
+        cv_xt = x_train_vec[train_idx]
+        cv_xv = x_train_vec[val_idx]
         cv_yt, cv_yv = y_train[train_idx], y_train[val_idx]
 
         m_nb = MultinomialNB(alpha=0.5).fit(cv_xt, cv_yt)
@@ -394,7 +391,7 @@ def evaluate_baselines(x_train, y_train, x_test, y_test):
       weighted_f1 = f1_score(y_test, preds, average="weighted", zero_division=0)
       try:
         auc = roc_auc_score(y_test, probs, multi_class="ovr")
-      except Exception:
+      except (ValueError, TypeError):
         auc = 0.0
       calib = compute_calibration_metrics(y_test, probs)
       kappa = cohen_kappa_score(y_test, preds)
@@ -588,7 +585,12 @@ def evaluate_authentic_benchmark(model, tokenizer, metadata, baselines):
     raw_probs_clipped = np.clip(raw_probs, 0.05, 0.95)
     raw_probs_norm = raw_probs_clipped / np.sum(raw_probs_clipped, axis=1, keepdims=True)
 
-    from predict import NEGATION_WORDS, NEGATIVE_LEXICON, NEUTRAL_LEXICON, POSITIVE_LEXICON
+    from predict import (
+        NEGATION_WORDS,
+        NEGATIVE_LEXICON,
+        NEUTRAL_LEXICON,
+        POSITIVE_LEXICON,
+    )
 
     pipe_preds = []
     for idx, text in enumerate(texts):
@@ -997,12 +999,12 @@ def run_comprehensive_evaluation(max_eval_samples=5000, seed=42):
     
     try:
         auc = float(roc_auc_score(y_test, probabilities, multi_class="ovr"))
-    except Exception:
+    except (ValueError, TypeError):
         auc = 0.0
 
     try:
         loss = float(log_loss(y_test, probabilities))
-    except Exception:
+    except (ValueError, TypeError):
         loss = 0.0
 
     calib = compute_calibration_metrics(y_test, probabilities)
@@ -1115,17 +1117,17 @@ def run_comprehensive_evaluation(max_eval_samples=5000, seed=42):
         "per_class": per_class,
     }
 
-    pipe_res = cast(Dict[str, Any], hard_results["Full Pipeline (LSTM + Context Negation)"])
-    nb_hard = cast(Dict[str, Any], hard_results["Multinomial Naive Bayes"])
-    lr_hard = cast(Dict[str, Any], hard_results["Logistic Regression (Balanced)"])
-    nb_base = cast(Dict[str, Any], baselines["Multinomial Naive Bayes"])
-    lr_base = cast(Dict[str, Any], baselines["Logistic Regression (Balanced)"])
-    nb_auth = cast(Dict[str, Any], auth_report["Multinomial Naive Bayes"])
-    lr_auth = cast(Dict[str, Any], auth_report["Logistic Regression (Balanced)"])
-    lstm_auth = cast(Dict[str, Any], auth_report["Bidirectional LSTM (Neural Pipeline)"])
-    bert_auth = cast(Dict[str, Any], auth_report["DistilBERT (Transformer Baseline)"])
+    pipe_res = hard_results["Full Pipeline (LSTM + Context Negation)"]
+    nb_hard = hard_results["Multinomial Naive Bayes"]
+    lr_hard = hard_results["Logistic Regression (Balanced)"]
+    nb_base = baselines["Multinomial Naive Bayes"]
+    lr_base = baselines["Logistic Regression (Balanced)"]
+    nb_auth = auth_report["Multinomial Naive Bayes"]
+    lr_auth = auth_report["Logistic Regression (Balanced)"]
+    lstm_auth = auth_report["Bidirectional LSTM (Neural Pipeline)"]
+    bert_auth = auth_report["DistilBERT (Transformer Baseline)"]
 
-    comparison: Dict[str, Dict[str, Any]] = {
+    comparison: dict[str, dict[str, Any]] = {
         "Multinomial Naive Bayes": {
             **{k: v for k, v in nb_base.items() if k not in ("model_obj", "vectorizer")},
             "hard_challenge_accuracy": nb_hard["accuracy"],

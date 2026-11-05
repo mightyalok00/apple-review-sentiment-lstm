@@ -68,7 +68,7 @@ NEGATIVE_LEXICON = {
     "useless", "drain", "drains", "defective", "garbage", "trash", "heats", "hot",
     "ripoff", "flicker", "crack", "slow", "stutter", "stutters", "freezes", "crashes",
     "scuffs", "dimmer", "paperweight", "scuff", "complaint", "complaints", "dropouts",
-    "cheaply", "stutter", "laggy", "shuts", "burning", "ruin", "ruins", "refused"
+    "cheaply", "laggy", "shuts", "burning", "ruin", "ruins", "refused"
 }
 NEUTRAL_LEXICON = {
     "average", "standard", "fine", "adequate", "identical", "meh", "refresh", "balanced",

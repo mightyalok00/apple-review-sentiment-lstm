@@ -69,7 +69,7 @@ def run_reproducibility_pipeline(max_train_samples=3000, epochs=2):
     print("=" * 75)
     print(f" Timestamp:        {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print(f" Python Version:   {platform.python_version()} ({platform.system()} {platform.machine()})")
-    print(f" Enforced Seed:    42")
+    print(" Enforced Seed:    42")
     print("-" * 75)
 
     # Stage 1: Dataset Integrity & Partition Validation

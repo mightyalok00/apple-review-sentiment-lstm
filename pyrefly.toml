@@ -4,4 +4,6 @@ implicit-import = "ignore"
 unnecessary-type-conversion = "ignore"
 bad-assignment = "ignore"
 unsupported-operation = "ignore"
+redundant-cast = "ignore"
+missing-module-attribute = "ignore"
 

@@ -8,19 +8,14 @@ sys.path.insert(0, str(ROOT))
 
 import numpy as np
 import pandas as pd
-import pytest
 
-from predict import analyze_aspects, predict, predict_detailed
+from predict import predict, predict_detailed
 from scraper import (
-    COUNTRIES_130,
     count_csv_rows,
     extract_stars,
-    get_all_csv_paths,
     get_browser_headers,
-    load_existing_ids,
     save_to_csv,
     stable_id,
-    sync_parquet_storage,
 )
 
 
@@ -169,8 +164,9 @@ def test_pipeline_workflow_stages():
 
 def test_deterministic_reproducibility():
     """Verify that set_seed guarantees deterministic sampling and train/test splits."""
-    from evaluate_model import set_seed
     import numpy as np
+
+    from evaluate_model import set_seed
 
     set_seed(42)
     sample_a = np.random.rand(10)
@@ -260,19 +256,19 @@ def test_negation_inversion_sentiment():
     from predict import predict
 
     # "not bad" should shift sentiment away from negative
-    sentiment_not_bad, probs_not_bad = predict("The battery life is definitely not bad at all.")
+    sentiment_not_bad, _ = predict("The battery life is definitely not bad at all.")
     assert sentiment_not_bad in ("positive", "neutral")
 
     # "not good" should shift sentiment away from positive
-    sentiment_not_good, probs_not_good = predict("The screen quality is not good at all, completely washed out.")
+    sentiment_not_good, _ = predict("The screen quality is not good at all, completely washed out.")
     assert sentiment_not_good in ("negative", "neutral")
 
 
 def test_inference_latency_sla():
     """Verify that single inference latency satisfies production SLA (< 350ms on warm cache, < 2000ms under CI/coverage tracing)."""
-    import os
     import sys
     import time
+
     from predict import predict
 
     # Multi-iteration warm up for CPU cache & TF runtime
@@ -304,7 +300,7 @@ def test_extreme_and_unicode_inputs():
     from predict import predict
 
     # Empty and whitespace text
-    label, probs = predict("   ")
+    label, _ = predict("   ")
     assert label in ("negative", "neutral", "positive")
 
     # Pure emojis
@@ -319,9 +315,9 @@ def test_extreme_and_unicode_inputs():
 
 def test_dataset_manifest_integrity():
     """Verify that data/dataset_manifest.json exists, contains valid schema, and aligns with disk data."""
-    import hashlib
     import json
     from pathlib import Path
+
     import pandas as pd
 
     manifest_file = Path("data/dataset_manifest.json")
@@ -374,7 +370,8 @@ def test_statistical_significance_mcnemar():
 def test_bootstrap_confidence_intervals_and_leakage_audit():
     """Verify non-parametric bootstrap confidence intervals and data leakage audit."""
     from sklearn.metrics import accuracy_score
-    from evaluate_model import compute_bootstrap_ci, audit_data_leakage
+
+    from evaluate_model import audit_data_leakage, compute_bootstrap_ci
 
     # Bootstrap CI bounds
     y_true = np.array([0, 0, 1, 1, 2, 2] * 20)
@@ -401,7 +398,10 @@ def test_bootstrap_confidence_intervals_and_leakage_audit():
 
 def test_subgroup_slices_and_calibration():
     """Verify subpopulation slicing and calibration curve points generation."""
-    from evaluate_model import compute_subgroup_slices, generate_calibration_curve_points
+    from evaluate_model import (
+        compute_subgroup_slices,
+        generate_calibration_curve_points,
+    )
 
     texts = [
         "Terrible battery.",  # Short, Negation
@@ -447,8 +447,9 @@ def test_authentic_benchmark_dataset_integrity():
 
 def test_domain_generalization_and_lexical_diversity():
     """Verify domain generalization splits and lexical diversity calculation."""
-    from evaluate_model import audit_lexical_diversity, evaluate_domain_generalization
     import numpy as np
+
+    from evaluate_model import audit_lexical_diversity, evaluate_domain_generalization
 
     auth_sample = [
         {"product": "iPhone 16 Pro", "country": "US", "source_platform": "amazon.com", "label_numeric": 2},

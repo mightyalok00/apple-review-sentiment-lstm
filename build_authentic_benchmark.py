@@ -185,3 +185,4 @@ if __name__ == "__main__":
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     out_file.write_text(json.dumps(data, indent=2), encoding="utf-8")
     print(f"Generated {len(data)} authentic customer reviews in {out_file}")
+
