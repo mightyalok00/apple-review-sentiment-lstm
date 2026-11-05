@@ -425,15 +425,21 @@ make reproduce  # Run 100% deterministic reproduction runner
 The pipeline can be triggered through three complementary interfaces:
 
 1. **GitHub Actions Run Button**: Navigate to the [Pipeline & CI Workflow](https://github.com/mightyalok00/apple-review-sentiment-lstm/actions/workflows/ci.yml) page and click the **"Run workflow"** button to trigger automated CI/CD execution with custom inputs (`stages`, `train_epochs`, `max_samples`).
-2. **Streamlit UI Run Buttons (Tab 5)**: Click **"▶️ Run Full Workflow"**, or one-click preset buttons (**Run Data Validation & Parquet**, **Run Automated Test Suite**, **Run Baseline & Evaluation**) directly inside the interactive dashboard.
+2. **Streamlit UI Run Buttons (Mobile & Desktop Responsive)**: Tap the persistent top action bar or Tab 5 to execute **"▶️ Run Full Pipeline (CI)"**, **"🔬 Run Model Evaluation (evaluate_model.py)"**, or one-click presets directly inside the browser.
 3. **Headless CLI**: Execute [`workflow.py`](file:///c:/Users/Alok%20Agarwal/OneDrive/Desktop/alokkkk-main/workflow.py) or `make workflow-run`:
 
 ```bash
-# Run all 5 pipeline stages sequentially
+# Run all 6 pipeline stages sequentially (including evaluate_model.py)
 python workflow.py --all
 
 # Run partition validation, Parquet synchronization, and automated pytest suite
 python workflow.py --stages partition,parquet,test
+
+# Run data validation, Parquet sync, tests, and academic model evaluation
+python workflow.py --stages partition,parquet,test,eval
+
+# Run standalone model evaluation suite directly
+python evaluate_model.py --seed 42
 
 # Run live scraping and fast model retraining with custom hyperparameters
 python workflow.py --stages scrape,train --countries 5 --reviews 20 --epochs 2 --max-samples 3000

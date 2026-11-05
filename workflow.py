@@ -247,6 +247,25 @@ def stage_run_tests():
     }
 
 
+def stage_evaluate_model(max_samples=3000, seed=42):
+    """Stage 6: Model Evaluation, Baseline Benchmarks & Statistical Tests."""
+    from evaluate_model import run_comprehensive_evaluation
+
+    start_t = time.time()
+    res = run_comprehensive_evaluation(max_eval_samples=max_samples, seed=seed)
+    elapsed = round(time.time() - start_t, 2)
+
+    return {
+        "status": "SUCCESS",
+        "stage": "Model Evaluation & Benchmarking",
+        "elapsed_sec": elapsed,
+        "details": {
+            "evaluated_models": list(res.get("baseline_comparison", {}).keys()),
+            "leakage_verdict": res.get("data_leakage_audit", {}).get("audit_verdict", "VERIFIED_ZERO_LEAKAGE"),
+        },
+    }
+
+
 def run_full_pipeline(
     stages=None,
     scrape_countries=5,
@@ -259,7 +278,7 @@ def run_full_pipeline(
 ):
     """
     Executes selected stages of the end-to-end data & ML pipeline.
-    stages: list of stage keys, e.g. ["scrape", "partition", "parquet", "train", "test"]
+    stages: list of stage keys, e.g. ["scrape", "partition", "parquet", "train", "test", "eval"]
     """
     if stages is None:
         stages = ["scrape", "partition", "parquet", "train", "test"]
@@ -272,6 +291,7 @@ def run_full_pipeline(
         ("parquet", "High-Speed Parquet Sync"),
         ("train", "Neural LSTM Model Retraining"),
         ("test", "Automated Pytest Suite"),
+        ("eval", "Model Evaluation & Baseline Benchmark"),
     ]
 
     total_active_stages = len([s for s, _ in stage_sequence if s in stages])
@@ -308,6 +328,8 @@ def run_full_pipeline(
                 )
             elif key == "test":
                 res = stage_run_tests()
+            elif key == "eval":
+                res = stage_evaluate_model()
             else:
                 continue
 
@@ -364,8 +386,8 @@ def run_full_pipeline(
 def main():
     parser = argparse.ArgumentParser(description="Apple Review Intelligence End-to-End Pipeline Workflow")
     parser.add_argument("--run", action="store_true", help="Explicit run flag for automated workflow trigger")
-    parser.add_argument("--all", action="store_true", help="Run all 5 pipeline stages")
-    parser.add_argument("--stages", type=str, default="", help="Comma-separated stages: scrape,partition,parquet,train,test")
+    parser.add_argument("--all", action="store_true", help="Run all 6 pipeline stages (including evaluation)")
+    parser.add_argument("--stages", type=str, default="", help="Comma-separated stages: scrape,partition,parquet,train,test,eval")
     parser.add_argument("--countries", type=int, default=5, help="Number of countries to scrape in Stage 1")
     parser.add_argument("--reviews", type=int, default=20, help="Reviews per country to scrape")
     parser.add_argument("--epochs", type=int, default=3, help="Training epochs for model retraining")

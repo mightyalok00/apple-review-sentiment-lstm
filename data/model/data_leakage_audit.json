@@ -1,8 +1,8 @@
 {
-  "train_samples": 3998,
-  "test_samples": 1000,
+  "train_samples": 2400,
+  "test_samples": 600,
   "exact_duplicates": 0,
-  "mean_word_jaccard_overlap": 0.7036,
+  "mean_word_jaccard_overlap": 0.6812,
   "leakage_detected": false,
   "audit_verdict": "VERIFIED_ZERO_LEAKAGE"
 }

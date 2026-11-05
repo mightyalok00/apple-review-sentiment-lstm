@@ -19,15 +19,15 @@
     ],
     "cv_accuracy_mean": 1.0,
     "cv_accuracy_std": 0.0,
-    "train_time_sec": 0.009,
+    "train_time_sec": 0.002,
     "architecture": "TF-IDF (1-2 ngrams, 10k features) + MultinomialNB(alpha=0.5)",
-    "hard_challenge_accuracy": 0.625,
-    "hard_challenge_macro_f1": 0.6021,
-    "hard_challenge_cohen_kappa": 0.4297,
-    "hard_challenge_mcc": 0.4351,
+    "hard_challenge_accuracy": 0.575,
+    "hard_challenge_macro_f1": 0.5517,
+    "hard_challenge_cohen_kappa": 0.3567,
+    "hard_challenge_mcc": 0.3591,
     "hard_challenge_accuracy_ci_95": [
-      0.475,
-      0.775
+      0.425,
+      0.725
     ]
   },
   "Logistic Regression (Balanced)": {
@@ -36,8 +36,8 @@
     "macro_f1": 1.0,
     "weighted_f1": 1.0,
     "roc_auc_ovr": 1.0,
-    "brier_score": 0.0005,
-    "expected_calibration_error": 0.0171,
+    "brier_score": 0.0011,
+    "expected_calibration_error": 0.0263,
     "cohen_kappa": 1.0,
     "matthews_corrcoef": 1.0,
     "accuracy_ci_95": [
@@ -50,15 +50,15 @@
     ],
     "cv_accuracy_mean": 1.0,
     "cv_accuracy_std": 0.0,
-    "train_time_sec": 0.146,
+    "train_time_sec": 0.048,
     "architecture": "TF-IDF (1-2 ngrams, 10k features) + LogisticRegression(L2, balanced)",
-    "hard_challenge_accuracy": 0.7,
-    "hard_challenge_macro_f1": 0.6944,
-    "hard_challenge_cohen_kappa": 0.5463,
-    "hard_challenge_mcc": 0.5484,
+    "hard_challenge_accuracy": 0.675,
+    "hard_challenge_macro_f1": 0.6688,
+    "hard_challenge_cohen_kappa": 0.5071,
+    "hard_challenge_mcc": 0.5105,
     "hard_challenge_accuracy_ci_95": [
-      0.55,
-      0.85
+      0.525,
+      0.825
     ]
   },
   "Bidirectional LSTM (Neural Pipeline)": {

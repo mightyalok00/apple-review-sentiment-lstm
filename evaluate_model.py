@@ -833,6 +833,16 @@ def run_comprehensive_evaluation(max_eval_samples=5000, seed=42):
         "confusion_matrix": cm_norm,
         "error_count": len(error_audits),
         "hard_challenge": hard_results,
+        "data_leakage_audit": data_leakage,
+        "sliced_performance": {
+            "in_distribution_slices": subgroup_slices,
+            "hard_challenge_slices": hard_subgroup_slices,
+        },
+        "calibration_curve": {
+            "bins": calib_points,
+            "brier_score": calib["brier_score"],
+            "expected_calibration_error": calib["expected_calibration_error"],
+        },
     }
 
 

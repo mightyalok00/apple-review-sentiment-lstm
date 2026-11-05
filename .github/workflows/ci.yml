@@ -14,9 +14,11 @@ on:
         type: choice
         options:
           - "partition,parquet,test"
-          - "partition,parquet"
-          - "test"
+          - "partition,parquet,test,eval"
+          - "eval"
           - "all"
+          - "test"
+          - "partition,parquet"
           - "train,test"
       train_epochs:
         description: "Training epochs if retraining neural model"

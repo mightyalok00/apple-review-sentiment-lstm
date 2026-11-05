@@ -5,7 +5,7 @@
       "bin_upper": 1.0,
       "mean_confidence": 0.9996,
       "empirical_accuracy": 1.0,
-      "sample_count": 1000
+      "sample_count": 600
     }
   ],
   "brier_score": 0.0,
