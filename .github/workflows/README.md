@@ -61,7 +61,6 @@ python evaluate_model.py --seed 42
 
 # Run all 6 stages headlessly
 python workflow.py --all
-python workflow.py --all
 
 # Using Makefile target
 make workflow-run

@@ -12,6 +12,7 @@ Evaluates the Bidirectional LSTM against classical Machine Learning baselines
 
 import json
 import logging
+import math
 import os
 import random
 import re
@@ -29,7 +30,6 @@ os.environ["PYTHONHASHSEED"] = "42"
 
 import numpy as np
 import pandas as pd
-from scipy.stats import chi2
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
@@ -251,7 +251,8 @@ def run_mcnemar_test(y_true, preds_a, preds_b):
     if total == 0:
         return {"chi2_stat": 0.0, "p_value": 1.0, "significant": False, "discordant_a": b, "discordant_b": c}
     chi2_stat = float(((abs(b - c) - 1.0) ** 2) / total)
-    p_val = float(1.0 - chi2.cdf(chi2_stat, df=1))
+    # Exact survival function for chi-square with df=1: P(X >= x) = erfc(sqrt(x/2))
+    p_val = float(math.erfc(math.sqrt(chi2_stat / 2.0)))
     return {
         "chi2_stat": round(chi2_stat, 4),
         "p_value": round(p_val, 6),
@@ -754,28 +755,23 @@ def run_comprehensive_evaluation(max_eval_samples=5000, seed=42):
     print("=" * 98)
     print(f" {'Model':<30} | {'In-Dist (95% CI)':<19} | {'5-Fold CV':<13} | {'Hard (95% CI)':<18} | {'Kappa':<6} | {'Brier':<6}")
     print("-" * 98)
-    for m_name, m_data_raw in comparison.items():
-        m_data = cast(Dict[str, Any], m_data_raw)
-        acc_ci = cast(List[float], m_data.get("accuracy_ci_95", [1.0, 1.0]))
+    for m_name, m_data in comparison.items():
+        acc_ci = m_data.get("accuracy_ci_95", [1.0, 1.0])
         ci_str = f"[{float(acc_ci[0]):.2f}, {float(acc_ci[1]):.2f}]"
-        acc_num = float(cast(Any, m_data.get("accuracy", 1.0)))
+        acc_num = float(m_data.get("accuracy", 1.0))
         in_dist_str = f"{acc_num * 100:.1f}% {ci_str}"
         if "cv_accuracy_mean" in m_data:
-            cv_mean = float(cast(Any, m_data["cv_accuracy_mean"]))
-            cv_std = float(cast(Any, m_data["cv_accuracy_std"]))
+            cv_mean = float(m_data["cv_accuracy_mean"])
+            cv_std = float(m_data["cv_accuracy_std"])
             cv_str = f"{cv_mean * 100:.1f}±{cv_std * 100:.1f}%"
         else:
             cv_str = "N/A (Neural)"
-        hard_raw = m_data.get("hard_challenge_accuracy", 0.0)
-        hard_val = float(cast(Any, hard_raw))
-        hard_ci_raw = m_data.get("hard_challenge_accuracy_ci_95", [hard_val, hard_val])
-        hard_ci = cast(List[float], hard_ci_raw)
+        hard_val = float(m_data.get("hard_challenge_accuracy", 0.0))
+        hard_ci = m_data.get("hard_challenge_accuracy_ci_95", [hard_val, hard_val])
         hard_ci_str = f"[{float(hard_ci[0]) * 100:.1f}%, {float(hard_ci[1]) * 100:.1f}%]"
         hard_full_str = f"{hard_val * 100:.1f}% {hard_ci_str}"
-        kappa_raw = m_data.get("hard_challenge_cohen_kappa", m_data.get("cohen_kappa", 0.0))
-        kappa_val = float(cast(Any, kappa_raw))
-        brier_raw = m_data.get("brier_score", 0.0)
-        brier_val = float(cast(Any, brier_raw))
+        kappa_val = float(m_data.get("hard_challenge_cohen_kappa", m_data.get("cohen_kappa", 0.0)))
+        brier_val = float(m_data.get("brier_score", 0.0))
         print(f" {m_name:<30} | {in_dist_str:<19} | {cv_str:<13} | {hard_full_str:<18} | {kappa_val:>6.3f} | {brier_val:>6.4f}")
     print("=" * 98)
 
