@@ -1042,27 +1042,29 @@ with tab_workflow:
             # Benchmark Comparison Table with 95% Confidence Intervals
             bench_rows = []
             for m_name, m_vals in bench_data.items():
-                cv_txt = f"{m_vals['cv_accuracy_mean']*100:.1f}% ± {m_vals['cv_accuracy_std']*100:.1f}%" if "cv_accuracy_mean" in m_vals else "N/A (Neural)"
+                cv_txt = f"{float(m_vals['cv_accuracy_mean'])*100:.1f}% ± {float(m_vals['cv_accuracy_std'])*100:.1f}%" if "cv_accuracy_mean" in m_vals else "N/A (Neural)"
                 
                 # 95% CIs
                 ci_in = m_vals.get("accuracy_ci_95", [1.0, 1.0])
-                ci_in_str = f"{ci_in[0]*100:.1f}% - {ci_in[1]*100:.1f}%"
+                ci_in_str = f"{float(ci_in[0])*100:.1f}% - {float(ci_in[1])*100:.1f}%"
                 
-                hard_acc = m_vals.get("hard_challenge_accuracy", 0.0) * 100
+                hard_acc = float(m_vals.get("hard_challenge_accuracy", 0.0)) * 100
                 ci_ood = m_vals.get("hard_challenge_accuracy_ci_95", [hard_acc/100, hard_acc/100])
-                ci_ood_str = f"{ci_ood[0]*100:.1f}% - {ci_ood[1]*100:.1f}%"
+                ci_ood_str = f"{float(ci_ood[0])*100:.1f}% - {float(ci_ood[1])*100:.1f}%"
 
-                kappa_val = m_vals.get("hard_challenge_cohen_kappa", m_vals.get("cohen_kappa", 1.0))
-                mcc_val = m_vals.get("hard_challenge_mcc", m_vals.get("matthews_corrcoef", 1.0))
+                kappa_val = float(m_vals.get("hard_challenge_cohen_kappa", m_vals.get("cohen_kappa", 1.0)))
+                mcc_val = float(m_vals.get("hard_challenge_mcc", m_vals.get("matthews_corrcoef", 1.0)))
+                acc_in_val = float(m_vals.get("accuracy", 1.0)) * 100
+                brier_val = float(m_vals.get("brier_score", 0.0))
 
                 bench_rows.append({
                     "Model": m_name,
-                    "In-Dist Acc (95% CI)": f"{m_vals.get('accuracy', 1.0)*100:.1f}% [{ci_in_str}]",
+                    "In-Dist Acc (95% CI)": f"{acc_in_val:.1f}% [{ci_in_str}]",
                     "Hard OOD Acc (95% CI)": f"{hard_acc:.1f}% [{ci_ood_str}]",
                     "Cohen's Kappa (κ)": f"{kappa_val:.4f}",
                     "Matthews Corr (MCC)": f"{mcc_val:.4f}",
                     "5-Fold Stratified CV": cv_txt,
-                    "Brier Score": f"{m_vals.get('brier_score', 0.0):.4f}",
+                    "Brier Score": f"{brier_val:.4f}",
                 })
             st.dataframe(pd.DataFrame(bench_rows), use_container_width=True)
 

@@ -703,23 +703,28 @@ def run_comprehensive_evaluation(max_eval_samples=5000, seed=42):
     }
 
     # Comparison summary table (removing non-serializable objects)
-    pipe_res = hard_results["Full Pipeline (LSTM + Context Negation)"]
-    comparison = {
+    pipe_res = cast(Dict[str, Any], hard_results["Full Pipeline (LSTM + Context Negation)"])
+    nb_hard = cast(Dict[str, Any], hard_results["Multinomial Naive Bayes"])
+    lr_hard = cast(Dict[str, Any], hard_results["Logistic Regression (Balanced)"])
+    nb_base = cast(Dict[str, Any], baselines["Multinomial Naive Bayes"])
+    lr_base = cast(Dict[str, Any], baselines["Logistic Regression (Balanced)"])
+
+    comparison: Dict[str, Dict[str, Any]] = {
         "Multinomial Naive Bayes": {
-            **{k: v for k, v in baselines["Multinomial Naive Bayes"].items() if k not in ("model_obj", "vectorizer")},
-            "hard_challenge_accuracy": hard_results["Multinomial Naive Bayes"]["accuracy"],
-            "hard_challenge_macro_f1": hard_results["Multinomial Naive Bayes"]["macro_f1"],
-            "hard_challenge_cohen_kappa": hard_results["Multinomial Naive Bayes"]["cohen_kappa"],
-            "hard_challenge_mcc": hard_results["Multinomial Naive Bayes"]["matthews_corrcoef"],
-            "hard_challenge_accuracy_ci_95": hard_results["Multinomial Naive Bayes"]["accuracy_ci_95"],
+            **{k: v for k, v in nb_base.items() if k not in ("model_obj", "vectorizer")},
+            "hard_challenge_accuracy": nb_hard["accuracy"],
+            "hard_challenge_macro_f1": nb_hard["macro_f1"],
+            "hard_challenge_cohen_kappa": nb_hard["cohen_kappa"],
+            "hard_challenge_mcc": nb_hard["matthews_corrcoef"],
+            "hard_challenge_accuracy_ci_95": nb_hard["accuracy_ci_95"],
         },
         "Logistic Regression (Balanced)": {
-            **{k: v for k, v in baselines["Logistic Regression (Balanced)"].items() if k not in ("model_obj", "vectorizer")},
-            "hard_challenge_accuracy": hard_results["Logistic Regression (Balanced)"]["accuracy"],
-            "hard_challenge_macro_f1": hard_results["Logistic Regression (Balanced)"]["macro_f1"],
-            "hard_challenge_cohen_kappa": hard_results["Logistic Regression (Balanced)"]["cohen_kappa"],
-            "hard_challenge_mcc": hard_results["Logistic Regression (Balanced)"]["matthews_corrcoef"],
-            "hard_challenge_accuracy_ci_95": hard_results["Logistic Regression (Balanced)"]["accuracy_ci_95"],
+            **{k: v for k, v in lr_base.items() if k not in ("model_obj", "vectorizer")},
+            "hard_challenge_accuracy": lr_hard["accuracy"],
+            "hard_challenge_macro_f1": lr_hard["macro_f1"],
+            "hard_challenge_cohen_kappa": lr_hard["cohen_kappa"],
+            "hard_challenge_mcc": lr_hard["matthews_corrcoef"],
+            "hard_challenge_accuracy_ci_95": lr_hard["accuracy_ci_95"],
         },
         "Bidirectional LSTM (Neural Pipeline)": {
             "accuracy": round(acc, 4),
@@ -749,17 +754,28 @@ def run_comprehensive_evaluation(max_eval_samples=5000, seed=42):
     print("=" * 98)
     print(f" {'Model':<30} | {'In-Dist (95% CI)':<19} | {'5-Fold CV':<13} | {'Hard (95% CI)':<18} | {'Kappa':<6} | {'Brier':<6}")
     print("-" * 98)
-    for m_name, m_data in comparison.items():
-        ci_str = f"[{m_data.get('accuracy_ci_95', [1.0, 1.0])[0]:.2f}, {m_data.get('accuracy_ci_95', [1.0, 1.0])[1]:.2f}]"
-        in_dist_str = f"{m_data['accuracy'] * 100:.1f}% {ci_str}"
-        cv_str = f"{m_data['cv_accuracy_mean']*100:.1f}±{m_data['cv_accuracy_std']*100:.1f}%" if "cv_accuracy_mean" in m_data else "N/A (Neural)"
+    for m_name, m_data_raw in comparison.items():
+        m_data = cast(Dict[str, Any], m_data_raw)
+        acc_ci = cast(List[float], m_data.get("accuracy_ci_95", [1.0, 1.0]))
+        ci_str = f"[{float(acc_ci[0]):.2f}, {float(acc_ci[1]):.2f}]"
+        acc_num = float(cast(Any, m_data.get("accuracy", 1.0)))
+        in_dist_str = f"{acc_num * 100:.1f}% {ci_str}"
+        if "cv_accuracy_mean" in m_data:
+            cv_mean = float(cast(Any, m_data["cv_accuracy_mean"]))
+            cv_std = float(cast(Any, m_data["cv_accuracy_std"]))
+            cv_str = f"{cv_mean * 100:.1f}±{cv_std * 100:.1f}%"
+        else:
+            cv_str = "N/A (Neural)"
         hard_raw = m_data.get("hard_challenge_accuracy", 0.0)
-        hard_val = float(hard_raw) if isinstance(hard_raw, (int, float)) else 0.0
-        hard_ci = m_data.get("hard_challenge_accuracy_ci_95", [hard_val, hard_val])
-        hard_ci_str = f"[{hard_ci[0]*100:.1f}%, {hard_ci[1]*100:.1f}%]"
+        hard_val = float(cast(Any, hard_raw))
+        hard_ci_raw = m_data.get("hard_challenge_accuracy_ci_95", [hard_val, hard_val])
+        hard_ci = cast(List[float], hard_ci_raw)
+        hard_ci_str = f"[{float(hard_ci[0]) * 100:.1f}%, {float(hard_ci[1]) * 100:.1f}%]"
         hard_full_str = f"{hard_val * 100:.1f}% {hard_ci_str}"
-        kappa_val = m_data.get("hard_challenge_cohen_kappa", m_data.get("cohen_kappa", 0.0))
-        brier_val = m_data.get("brier_score", 0.0)
+        kappa_raw = m_data.get("hard_challenge_cohen_kappa", m_data.get("cohen_kappa", 0.0))
+        kappa_val = float(cast(Any, kappa_raw))
+        brier_raw = m_data.get("brier_score", 0.0)
+        brier_val = float(cast(Any, brier_raw))
         print(f" {m_name:<30} | {in_dist_str:<19} | {cv_str:<13} | {hard_full_str:<18} | {kappa_val:>6.3f} | {brier_val:>6.4f}")
     print("=" * 98)
 
