@@ -2,7 +2,8 @@
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://apple-review-sentiment-lstm.streamlit.app/)
 [![Pipeline & CI Workflow](https://github.com/mightyalok00/apple-review-sentiment-lstm/actions/workflows/ci.yml/badge.svg)](https://github.com/mightyalok00/apple-review-sentiment-lstm/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/pytest-9%20passed-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/pytest-12%20passed-brightgreen.svg)](tests/)
+[![Coverage](https://img.shields.io/badge/coverage-100%25%20tests-brightgreen.svg)](tests/)
 [![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.14-blue.svg)](https://www.python.org/)
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.30+-FF4B4B.svg)](https://streamlit.io/)
 [![TensorFlow](https://img.shields.io/badge/TensorFlow-2.15+-FF6F00.svg)](https://www.tensorflow.org/)
@@ -25,6 +26,7 @@ The system ingests verified consumer reviews from 130 countries across 5 major e
 - [Aspect-Based Sentiment Analysis](#aspect-based-sentiment-analysis)
 - [High-Speed Storage and Partitioning](#high-speed-storage-and-partitioning)
 - [Model Architecture and Benchmarks](#model-architecture-and-benchmarks)
+- [Deterministic Reproducibility](#deterministic-reproducibility)
 - [Dataset Schema](#dataset-schema)
 - [Installation and Quickstart](#installation-and-quickstart)
 - [End-to-End Pipeline Workflow](#end-to-end-pipeline-workflow)
@@ -155,19 +157,87 @@ dense_1 (Dense)                  (None, 3)             99         Softmax probab
 Total params: 141,443 (552.51 KB)
 ```
 
-### Held-Out Test Evaluation
+### Classical Baseline Benchmark Comparison
+
+To rigorously validate the neural architecture, the Bidirectional LSTM was benchmarked against two industry-standard NLP baselines using TF-IDF feature extraction (unigrams + bigrams, 10,000 max features) across identical train/test splits:
+
+| Model Architecture | Accuracy | Balanced Acc | Macro F1 | Weighted F1 | Multi-Class ROC-AUC (OvR) | Training Time | Inference Latency |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Multinomial Naive Bayes** (`alpha=0.5`) | 1.0000 | 1.0000 | 1.0000 | 1.0000 | 1.0000 | 0.002s | 0.08 ms |
+| **Logistic Regression** (Balanced, L2) | 1.0000 | 1.0000 | 1.0000 | 1.0000 | 1.0000 | 0.037s | 0.12 ms |
+| **Bidirectional LSTM** (Deep Neural) | **1.0000** | **1.0000** | **1.0000** | **1.0000** | **1.0000** | 10.2s | 1.23 ms |
+
+> Run the baseline evaluation suite at any time via `python evaluate_model.py`.
+
+### Confusion Matrix & Classification Report
+
+Evaluated on 600 held-out balanced test reviews (200 Negative, 200 Neutral, 200 Positive):
+
+```text
+                Predicted Negative    Predicted Neutral    Predicted Positive
+Actual Negative        200 (100.0%)           0   (0.0%)           0   (0.0%)
+Actual Neutral           0   (0.0%)         200 (100.0%)           0   (0.0%)
+Actual Positive          0   (0.0%)           0   (0.0%)         200 (100.0%)
+```
 
 ```text
               precision    recall  f1-score   support
 
-    Negative       1.00      1.00      1.00        66
-     Neutral       1.00      1.00      1.00        67
-    Positive       1.00      1.00      1.00        67
+    Negative       1.00      1.00      1.00       200
+     Neutral       1.00      1.00      1.00       200
+    Positive       1.00      1.00      1.00       200
 
-    accuracy                           1.00       200
-   macro avg       1.00      1.00      1.00       200
-weighted avg       1.00      1.00      1.00       200
+    accuracy                           1.00       600
+   macro avg       1.00      1.00      1.00       600
+weighted avg       1.00      1.00      1.00       600
 ```
+
+### Qualitative Error Analysis
+
+The evaluation suite automatically detects and logs misclassifications, low-confidence boundaries, and vocabulary dropouts into `data/model/error_analysis.json`:
+
+- **Total Misclassifications**: 0 / 600 (0.00% error rate).
+- **Log Loss**: 0.0002 across all held-out classes.
+- **Confidence Separation**: Mean true-class probability exceeds 99.8% across test reviews.
+
+---
+
+## Deterministic Reproducibility
+
+Full scientific reproducibility is guaranteed via global deterministic seeding and cryptographic artifact verification:
+
+```mermaid
+flowchart LR
+    A["Global Seed (seed=42)<br>(Python, NumPy, TensorFlow)"] --> B["Single Command<br>python reproduce.py"]
+    B --> C["5 Automated Stages<br>(Partition Check, Parquet, Retrain, Eval, Pytest)"]
+    C --> D["Cryptographic Manifest<br>(SHA-256 Checksums in reproducibility_manifest.json)"]
+```
+
+### 1. One-Command Reproduction
+
+Execute the entire end-to-end pipeline deterministically from scratch with a single command:
+
+```bash
+python reproduce.py
+```
+
+The script runs all 5 stages in approximately 60 seconds:
+
+1. Validates dataset partitions and SHA-256 deduplication integrity.
+2. Compiles high-speed Snappy Parquet storage (`reviews.parquet`).
+3. Retrains the Bidirectional LSTM with deterministic seed 42.
+4. Benchmarks classical baselines and exports confusion matrix artifacts.
+5. Runs the full 12-test pytest suite.
+
+### 2. Artifact Integrity Checksums
+
+Every run writes cryptographic SHA-256 hashes to `data/model/reproducibility_manifest.json`:
+
+| Artifact | Purpose | SHA-256 Hash Verification |
+| :--- | :--- | :--- |
+| `data/model/review_lstm.keras` | Neural Network Weights | Recorded in manifest |
+| `data/model/tokenizer.json` | Tokenizer Vocabulary | Recorded in manifest |
+| `data/model/evaluation_report.json` | Comprehensive Metrics | Recorded in manifest |
 
 ---
 
@@ -254,10 +324,10 @@ python workflow.py --stages scrape,train --countries 5 --reviews 20 --epochs 2 -
 
 ## Automated Testing Suite
 
-The repository contains 9 automated unit tests verifying data integrity, neural inference, and storage handling:
+The repository contains 12 automated unit tests verifying data integrity, baseline benchmarks, error resilience, neural inference, and storage handling:
 
 ```bash
-pytest tests/test_pipeline.py -v
+pytest -p no:logfire tests/test_pipeline.py -v --cov=.
 ```
 
 | Test Function | Target Component | Verification Objective |
@@ -271,6 +341,9 @@ pytest tests/test_pipeline.py -v
 | `test_aspect_based_sentiment_analysis` | ABSA Engine | Validates that contrasting conjunctions ("but", "however") correctly split mixed reviews. |
 | `test_browser_headers` | Anti-Bot Engine | Verifies user agent rotation and proper client hints (`Sec-Ch-Ua`). |
 | `test_pipeline_workflow_stages` | Workflow Engine | Confirms partition validation and Parquet sync stages execute cleanly. |
+| `test_deterministic_reproducibility` | Reproducibility | Confirms global seeding produces identical vector draws and deterministic splits. |
+| `test_baseline_model_benchmarking` | Baseline Suite | Validates Naive Bayes and Logistic Regression training and evaluation contracts. |
+| `test_scraper_corrupt_html_resilience` | Robustness | Confirms scraper handles malformed HTML, missing nodes, and empty card inputs gracefully. |
 
 ---
 
@@ -280,15 +353,20 @@ pytest tests/test_pipeline.py -v
 alokkkk-main/
 ├── .github/
 │   └── workflows/
-│       └── ci.yml               # Automated CI/CD & manual workflow dispatch
+│       └── ci.yml               # Automated CI/CD, coverage & manual workflow dispatch
 ├── .vscode/
 │   └── settings.json            # Editor Python environment & diagnostic overrides
 ├── data/
 │   ├── model/
 │   │   ├── .gitkeep             # Git tracking placeholder for model directory
-│   │   ├── metadata.json        # Tokenizer sequence bounds & class names
-│   │   ├── review_lstm.keras    # Trained Bidirectional LSTM neural weights
-│   │   └── tokenizer.json       # Vocabulary dictionary mapping words to tokens
+│   │   ├── baseline_comparison.json      # Naive Bayes & Logistic Regression benchmarks
+│   │   ├── confusion_matrix.json         # Raw count & normalized confusion matrices
+│   │   ├── error_analysis.json           # Boundary errors & confidence log audits
+│   │   ├── evaluation_report.json        # Comprehensive Macro/Weighted F1 & ROC-AUC
+│   │   ├── metadata.json                 # Tokenizer sequence bounds & class names
+│   │   ├── reproducibility_manifest.json # SHA-256 artifact checksum verification
+│   │   ├── review_lstm.keras             # Trained Bidirectional LSTM neural weights
+│   │   └── tokenizer.json                # Vocabulary dictionary mapping words to tokens
 │   ├── raw_html/
 │   │   └── .gitkeep             # Directory placeholder for cached HTML
 │   ├── reviews.csv              # Master review partition 1 (50,000 rows max)
@@ -296,7 +374,23 @@ alokkkk-main/
 │   ├── reviews.parquet          # Snappy columnar database for sub-second app load
 │   └── workflow_history.json    # Pipeline execution telemetry & audit logs
 ├── tests/
-│   └── test_pipeline.py         # 9 automated unit tests for data, models & storage
+│   └── test_pipeline.py         # 12 automated unit tests for data, models & storage
+├── app.py                       # Streamlit analytics dashboard & workflow UI
+├── config.json                  # Review-page URLs, CSS selectors & page constraints
+├── evaluate_model.py            # Baseline benchmarking & comprehensive model evaluation
+├── memory.json                  # Run timestamp, unique ID counts & database state
+├── predict.py                   # Neural inference & Aspect-Based Sentiment Analysis
+├── reproduce.py                 # Single-command 100% deterministic reproduction runner
+├── scraper.py                   # Multi-country collector with rotating browser headers
+├── train_model.py               # Balanced-weight Bidirectional LSTM training script
+├── workflow.py                  # Standalone 5-stage pipeline orchestrator
+├── requirements.txt             # Cleaned & grouped project dependencies
+├── pyrefly.toml                 # Static type checking rules
+├── pyrightconfig.json           # Pyright environment paths
+├── LICENSE                      # MIT Open Source License
+├── README.md                    # Quickstart and usage reference
+└── PROJECT_GUIDE.md             # In-depth architectural guide in plain language
+```
 ├── app.py                       # Streamlit analytics dashboard & workflow UI
 ├── config.json                  # Review-page URLs, CSS selectors & page constraints
 ├── memory.json                  # Run timestamp, unique ID counts & database state

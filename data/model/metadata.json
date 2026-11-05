@@ -1,9 +1,16 @@
 {
-  "max_len": 38,
+  "max_len": 39,
   "class_names": [
     "negative",
     "neutral",
     "positive"
   ],
-  "vocab_size": 486
+  "vocab_size": 489,
+  "random_seed": 42,
+  "python_version": "3.14.7",
+  "keras_version": "3.16.0.dev2026110403",
+  "trained_at_utc": "2026-11-05T11:07:33.074638+00:00",
+  "training_samples": 3000,
+  "test_accuracy": 1.0,
+  "test_loss": 0.0002
 }

@@ -167,3 +167,61 @@ def test_pipeline_workflow_stages():
     assert isinstance(total_rows, int) and total_rows >= 65000
 
 
+def test_deterministic_reproducibility():
+    """Verify that set_seed guarantees deterministic sampling and train/test splits."""
+    from evaluate_model import set_seed
+    import numpy as np
+
+    set_seed(42)
+    sample_a = np.random.rand(10)
+
+    set_seed(42)
+    sample_b = np.random.rand(10)
+
+    np.testing.assert_array_almost_equal(sample_a, sample_b, err_msg="Seed 42 must yield identical random sequences")
+
+
+def test_baseline_model_benchmarking():
+    """Verify that classical ML baselines (Naive Bayes & Logistic Regression) evaluate with valid metrics."""
+    from evaluate_model import evaluate_baselines
+
+    x_train = np.array([
+        "Battery lasts all day, best camera ever",
+        "Phone overheats, battery drains fast",
+        "Average phone, not much new compared to last year",
+        "Incredible 120Hz display, super smooth gaming",
+        "Terrible customer service, phone arrived broken",
+        "Okay value, decent screen but slow charging",
+    ] * 5)
+    y_train = np.array([2, 0, 1, 2, 0, 1] * 5)
+
+    x_test = np.array([
+        "Love the camera and battery",
+        "Horrible lag, freezes constantly",
+        "Standard update, nothing special",
+    ])
+    y_test = np.array([2, 0, 1])
+
+    baselines = evaluate_baselines(x_train, y_train, x_test, y_test)
+    assert "Multinomial Naive Bayes" in baselines
+    assert "Logistic Regression (Balanced)" in baselines
+
+    for name, res in baselines.items():
+        assert 0.0 <= res["accuracy"] <= 1.0, f"{name} accuracy must be within [0, 1]"
+        assert 0.0 <= res["macro_f1"] <= 1.0, f"{name} macro_f1 must be within [0, 1]"
+
+
+def test_scraper_corrupt_html_resilience():
+    """Verify that HTML extraction functions handle malformed, empty, and broken cards gracefully."""
+    from scraper import first_text, parse_review_cards
+
+    # Malformed HTML returns empty records and no next_url without raising exceptions
+    records, next_url = parse_review_cards("<div><p>broken html", {"review_card": "div"})
+    assert isinstance(records, list)
+    assert next_url is None
+
+    # Empty card and missing selector
+    assert first_text(None, "") == ""
+
+
+

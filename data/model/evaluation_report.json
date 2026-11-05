@@ -1,0 +1,33 @@
+{
+  "model_name": "Bidirectional LSTM RNN",
+  "accuracy": 1.0,
+  "balanced_accuracy": 1.0,
+  "macro_precision": 1.0,
+  "macro_recall": 1.0,
+  "macro_f1": 1.0,
+  "weighted_f1": 1.0,
+  "roc_auc_ovr": 1.0,
+  "log_loss": 0.0002,
+  "test_samples": 600,
+  "inference_latency_ms": 1.23,
+  "per_class": {
+    "negative": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "support": 200
+    },
+    "neutral": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "support": 200
+    },
+    "positive": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "support": 200
+    }
+  }
+}

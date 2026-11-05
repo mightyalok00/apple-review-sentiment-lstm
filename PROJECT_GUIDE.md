@@ -168,7 +168,37 @@ The engine monitors four key hardware aspects:
 
 ---
 
-## 5. How the Web Application Works
+## 5. Comprehensive Model Evaluation and Baseline Benchmarking
+
+To ensure the neural network genuinely outperforms standard machine learning techniques, [evaluate_model.py](file:///c:/Users/Alok%20Agarwal/OneDrive/Desktop/alokkkk-main/evaluate_model.py) evaluates the Bidirectional LSTM against two industry-standard NLP baselines:
+
+1. **Multinomial Naive Bayes** (`alpha=0.5`): A probabilistic bag-of-words classifier using TF-IDF n-grams (1-2 n-grams, 10,000 features).
+2. **Balanced Logistic Regression** (`class_weight='balanced'`, L2 penalty): A regularized linear model sensitive to boundary features.
+3. **Bidirectional LSTM RNN**: Deep neural sequence network learning temporal syntactic representations.
+
+### Metric Coverage
+
+The evaluation framework reports standard and robust class-balanced metrics:
+
+- **Accuracy & Balanced Accuracy**: Measures overall correctness as well as balanced recall per category.
+- **Macro & Weighted Precision, Recall, and F1**: Confirms that minority classes receive equal diagnostic weighting.
+- **Multi-Class One-vs-Rest (OvR) ROC-AUC**: Measures probability calibration and discrimination across all 3 classes.
+- **Confusion Matrix Analysis**: Exports raw count and normalized percentage matrices to `data/model/confusion_matrix.json`.
+- **Qualitative Error Analysis**: Automatically inspects misclassified records, confidence margins, and out-of-vocabulary boundary items in `data/model/error_analysis.json`.
+
+---
+
+## 6. Deterministic Reproducibility and Cryptographic Manifests
+
+Achieving full reproducibility requires eliminating non-determinism across all layers of the machine learning pipeline:
+
+- **Global Seed Management**: [train_model.py](file:///c:/Users/Alok%20Agarwal/OneDrive/Desktop/alokkkk-main/train_model.py) and [evaluate_model.py](file:///c:/Users/Alok%20Agarwal/OneDrive/Desktop/alokkkk-main/evaluate_model.py) set `seed=42` across Python `random`, NumPy `np.random.seed(42)`, and TensorFlow `tf.random.set_seed(42)`.
+- **Single-Command Reproduction**: Running `python reproduce.py` executes the entire pipeline sequentially: partition validation, Parquet synchronization, seeded neural retraining, baseline evaluation, and the complete 12-test pytest suite.
+- **Cryptographic Manifest**: After verification, `reproduce.py` calculates SHA-256 digital signatures for `review_lstm.keras`, `tokenizer.json`, and `evaluation_report.json`, writing the results to `data/model/reproducibility_manifest.json`.
+
+---
+
+## 7. How the Web Application Works
 
 The web application is deployed live at [apple-review-sentiment-lstm.streamlit.app](https://apple-review-sentiment-lstm.streamlit.app/). The local dashboard in [app.py](file:///c:/Users/Alok%20Agarwal/OneDrive/Desktop/alokkkk-main/app.py) is structured into five main functional tabs:
 
@@ -216,7 +246,7 @@ Filter the entire 65,000-review dataset instantly by:
 
 ---
 
-## 6. End-to-End Pipeline Workflow Runner
+## 8. End-to-End Pipeline Workflow Runner
 
 The project includes a standalone pipeline orchestrator in [workflow.py](file:///c:/Users/Alok%20Agarwal/OneDrive/Desktop/alokkkk-main/workflow.py) that coordinates the entire data engineering and deep learning lifecycle.
 
@@ -225,7 +255,7 @@ flowchart TD
     S1["Stage 1: Ingestion<br>(Scrape reviews with anti-bot headers)"] --> S2["Stage 2: Partitioning<br>(Enforce 50k row limits & deduplicate)"]
     S2 --> S3["Stage 3: Parquet Sync<br>(Compile snappy-compressed database)"]
     S3 --> S4["Stage 4: Model Retraining<br>(Bidirectional LSTM with balanced weights)"]
-    S4 --> S5["Stage 5: Quality Assurance<br>(Run 9-test pytest validation suite)"]
+    S4 --> S5["Stage 5: Quality Assurance<br>(Run 12-test pytest validation suite)"]
 ```
 
 ### The Five Orchestrated Stages
@@ -238,11 +268,11 @@ flowchart TD
 
 ---
 
-## 7. Automated Testing and Continuous Integration
+## 9. Automated Testing and Continuous Integration
 
 The repository includes a comprehensive automated test suite in [test_pipeline.py](file:///c:/Users/Alok%20Agarwal/OneDrive/Desktop/alokkkk-main/tests/test_pipeline.py) using `pytest` to guarantee reliability across every update.
 
-### What the 9 Automated Tests Cover
+### What the 12 Automated Tests Cover
 
 | Test Name | Pipeline Component | What It Verifies |
 | :--- | :--- | :--- |
@@ -255,6 +285,9 @@ The repository includes a comprehensive automated test suite in [test_pipeline.p
 | `test_aspect_based_sentiment_analysis` | ABSA Engine | Confirms contrasting conjunctions ("but", "however") correctly split mixed reviews. |
 | `test_browser_headers` | Anti-Bot Engine | Verifies user agent rotation and proper client hints (`Sec-Ch-Ua`). |
 | `test_pipeline_workflow_stages` | Workflow Engine | Validates that partition validation and Parquet sync stages execute cleanly. |
+| `test_deterministic_reproducibility` | Reproducibility | Confirms global seeding produces identical vector draws and deterministic splits. |
+| `test_baseline_model_benchmarking` | Baseline Suite | Validates Naive Bayes and Logistic Regression training and evaluation contracts. |
+| `test_scraper_corrupt_html_resilience` | Robustness | Confirms scraper handles malformed HTML, missing nodes, and empty card inputs gracefully. |
 
 ### Continuous Integration and Manual Workflow Dispatch
 
@@ -262,7 +295,7 @@ Every git commit or pull request automatically triggers the workflow defined in 
 
 ---
 
-## 8. Quick Command Reference
+## 10. Quick Command Reference
 
 ### Launch the Web Dashboard
 
@@ -299,6 +332,18 @@ python scraper.py --live --countries US,GB,IN,DE,JP --reviews 50
 python predict.py "The camera is breathtaking, but the battery drains too quickly."
 ```
 
+### Run Baseline Benchmarking and Evaluation
+
+```bash
+python evaluate_model.py
+```
+
+### Run 100% Deterministic Reproducibility Pipeline
+
+```bash
+python reproduce.py
+```
+
 ### Retrain the Neural Network
 
 ```bash
@@ -308,5 +353,5 @@ python train_model.py
 ### Run the Automated Test Suite
 
 ```bash
-pytest tests/test_pipeline.py -v
+pytest -p no:logfire tests/test_pipeline.py -v --cov=.
 ```

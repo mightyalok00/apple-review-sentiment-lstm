@@ -1,12 +1,16 @@
 import json
 import os
+import random
 import re
+import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 os.environ["KERAS_HOME"] = str(ROOT / ".keras")
 os.environ["MPLCONFIGDIR"] = str(ROOT / ".keras" / "matplotlib")
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+os.environ["PYTHONHASHSEED"] = "42"
 
 import numpy as np
 import pandas as pd
@@ -35,6 +39,18 @@ MODEL_PATH = MODEL_DIR / "review_lstm.keras"
 TOKENIZER_PATH = MODEL_DIR / "tokenizer.json"
 METADATA_PATH = MODEL_DIR / "metadata.json"
 CLASS_NAMES = ["negative", "neutral", "positive"]
+
+
+def set_seed(seed=42):
+    """Enforces strict deterministic seeding across all random number generators."""
+    random.seed(seed)
+    np.random.seed(seed)
+    os.environ["PYTHONHASHSEED"] = str(seed)
+    try:
+        import tensorflow as tf
+        tf.random.set_seed(seed)
+    except Exception:
+        pass
 
 
 def parse_rating(raw, text=""):
@@ -171,6 +187,7 @@ def load_dataset():
 
 
 def train_model(epochs=10, max_samples=None, batch_size=None, verbose=1):
+    set_seed(42)
     df = load_dataset()
     if max_samples and max_samples < len(df):
         if verbose:
@@ -215,7 +232,7 @@ def train_model(epochs=10, max_samples=None, batch_size=None, verbose=1):
 
     # Robust Bidirectional LSTM (RNN) model
     model = Sequential([
-        Embedding(input_dim=vocab_size, output_dim=128, mask_zero=True),
+        Embedding(input_dim=vocab_size, output_dim=128, mask_zero=False),
         SpatialDropout1D(0.25),
         Bidirectional(LSTM(64, return_sequences=False)),
         Dropout(0.35),
@@ -265,10 +282,20 @@ def train_model(epochs=10, max_samples=None, batch_size=None, verbose=1):
     MODEL_DIR.mkdir(parents=True, exist_ok=True)
     model.save(MODEL_PATH)
     TOKENIZER_PATH.write_text(tokenizer.to_json(), encoding="utf-8")
-    METADATA_PATH.write_text(
-        json.dumps({"max_len": max_len, "class_names": CLASS_NAMES, "vocab_size": vocab_size}, indent=2),
-        encoding="utf-8",
-    )
+    
+    metadata_payload = {
+        "max_len": max_len,
+        "class_names": CLASS_NAMES,
+        "vocab_size": vocab_size,
+        "random_seed": 42,
+        "python_version": sys.version.split()[0],
+        "keras_version": getattr(keras, "__version__", "3.x"),
+        "trained_at_utc": datetime.now(timezone.utc).isoformat(),
+        "training_samples": len(df),
+        "test_accuracy": round(float(accuracy), 4),
+        "test_loss": round(float(loss), 4),
+    }
+    METADATA_PATH.write_text(json.dumps(metadata_payload, indent=2), encoding="utf-8")
     if verbose:
         print(f"Saved trained model and artifacts in {MODEL_DIR}")
 

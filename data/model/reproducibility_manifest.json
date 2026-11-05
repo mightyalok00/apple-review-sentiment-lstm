@@ -1,0 +1,45 @@
+{
+  "reproduced_at_utc": "2026-11-05T11:07:19.448853+00:00",
+  "random_seed": 42,
+  "environment": {
+    "python": "3.14.7",
+    "os": "Windows-11-10.0.26300-SP0",
+    "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel"
+  },
+  "stages": {
+    "data_validation": {
+      "status": "PASSED",
+      "total_reviews": 65038,
+      "partitions_count": 2
+    },
+    "parquet_sync": {
+      "status": "PASSED",
+      "parquet_size_mb": 6.64
+    },
+    "model_training": {
+      "status": "PASSED",
+      "loss": 0.0002182993048336357,
+      "accuracy": 1.0,
+      "vocab_size": 489,
+      "max_len": 39,
+      "samples": 3000
+    },
+    "evaluation": {
+      "status": "PASSED",
+      "lstm_accuracy": 1.0,
+      "lstm_macro_f1": 1.0,
+      "lstm_roc_auc": 1.0,
+      "error_count": 0
+    },
+    "test_suite": {
+      "status": "PASSED",
+      "summary": "12 passed in 20.58s"
+    }
+  },
+  "artifacts_checksums": {
+    "review_lstm_keras_sha256": "78f4e5d041b2002851b4800c9acd3298fd51ec87245538ed11d3e9143aa2ddd5",
+    "tokenizer_json_sha256": "ddfe1ce73fc8a7246d9038606cd6daa556c45c4db71c2270bdacb2fa80c39a0a",
+    "evaluation_report_json_sha256": "0d353931eab52ec0a3dedea630d9a538bdb686bdc0d90a7863049441ab3bf5d3"
+  },
+  "total_execution_seconds": 61.01
+}

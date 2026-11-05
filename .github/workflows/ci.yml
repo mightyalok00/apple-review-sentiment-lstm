@@ -48,11 +48,19 @@ jobs:
 
       - name: Compile Syntax Check
         run: |
-          python -m py_compile app.py scraper.py train_model.py predict.py workflow.py tests/test_pipeline.py
+          python -m py_compile app.py scraper.py train_model.py predict.py workflow.py evaluate_model.py reproduce.py tests/test_pipeline.py
 
-      - name: Run Pytest Test Suite
+      - name: Run Pytest Test Suite with Coverage
         run: |
-          pytest tests/test_pipeline.py -v
+          pytest -p no:logfire tests/test_pipeline.py -v --cov=. --cov-report=term --cov-report=xml:coverage.xml
+
+      - name: Run Baseline Benchmarking & Model Evaluation
+        run: |
+          python evaluate_model.py --seed 42
+
+      - name: Run Deterministic Reproducibility Pipeline
+        run: |
+          python reproduce.py --seed 42
 
       - name: Run Pipeline Workflow
         if: ${{ github.event_name != 'workflow_dispatch' }}
@@ -63,6 +71,27 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' }}
         run: |
           python workflow.py --stages "${{ inputs.stages }}" --epochs "${{ inputs.train_epochs }}" --max-samples "${{ inputs.max_samples }}"
+
+      - name: Upload Test Coverage Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-coverage-report
+          path: coverage.xml
+          if-no-files-found: ignore
+
+      - name: Upload Model Evaluation & Benchmark Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evaluation-and-reproducibility-artifacts
+          path: |
+            data/model/evaluation_report.json
+            data/model/baseline_comparison.json
+            data/model/confusion_matrix.json
+            data/model/error_analysis.json
+            data/model/reproducibility_manifest.json
+          if-no-files-found: ignore
 
       - name: Upload Workflow Telemetry Artifact
         if: always()
