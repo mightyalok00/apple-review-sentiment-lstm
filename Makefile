@@ -9,7 +9,7 @@ help:
 	@echo "Apple Review Intelligence & Sentiment RNN"
 	@echo "Available commands:"
 	@echo "  make install       Install all python requirements"
-	@echo "  make test          Execute automated 21-test pytest suite with coverage"
+	@echo "  make test          Execute automated 24-test pytest suite with coverage"
 	@echo "  make eval          Run baseline benchmarking, 5-fold CV & OOD stress-testing"
 	@echo "  make reproduce     Execute 100% deterministic end-to-end reproduction runner"
 	@echo "  make workflow      Run all 5 workflow pipeline stages"
