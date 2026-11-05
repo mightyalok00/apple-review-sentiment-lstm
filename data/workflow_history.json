@@ -191,5 +191,74 @@
         }
       }
     }
+  },
+  {
+    "timestamp": "2026-11-05T18:14:19.328462",
+    "overall_status": "SUCCESS",
+    "total_elapsed_sec": 70.71,
+    "executed_stages": [
+      "partition",
+      "parquet",
+      "test"
+    ],
+    "stage_results": {
+      "partition": {
+        "status": "SUCCESS",
+        "stage": "Partition Validation",
+        "elapsed_sec": 0.48,
+        "details": {
+          "total_reviews": 65038,
+          "unique_ids": 65038,
+          "duplicates_detected": 0,
+          "partitions": [
+            {
+              "filename": "reviews.csv",
+              "rows": 65006,
+              "at_capacity": true
+            },
+            {
+              "filename": "reviews_part2.csv",
+              "rows": 32,
+              "at_capacity": false
+            }
+          ],
+          "na_code_preserved": true
+        }
+      },
+      "parquet": {
+        "status": "SUCCESS",
+        "stage": "Parquet Synchronization",
+        "elapsed_sec": 0.59,
+        "details": {
+          "parquet_file": "reviews.parquet",
+          "file_size_mb": 6.64,
+          "total_rows": 65038,
+          "columns": [
+            "review_id",
+            "product",
+            "website",
+            "country",
+            "stars",
+            "rating_raw",
+            "text",
+            "review_date",
+            "source_url",
+            "scraped_at_utc",
+            "_source_file"
+          ],
+          "compression": "snappy"
+        }
+      },
+      "test": {
+        "status": "SUCCESS",
+        "stage": "Pytest Verification",
+        "elapsed_sec": 67.13,
+        "details": {
+          "exit_code": 0,
+          "passed_tests": 18,
+          "summary": "18 passed in 61.61s (0:01:01)"
+        }
+      }
+    }
   }
 ]

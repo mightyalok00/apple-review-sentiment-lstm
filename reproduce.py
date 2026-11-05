@@ -126,7 +126,7 @@ def run_reproducibility_pipeline(max_train_samples=3000, epochs=2):
 
     # Stage 5: Automated Pytest Suite Verification
     print("\n[Step 5/5] Executing automated pytest test suite...")
-    test_proc = subprocess.run([sys.executable, "-m", "pytest", "tests/test_pipeline.py", "-q"], capture_output=True, text=True)
+    test_proc = subprocess.run([sys.executable, "-m", "pytest", "-p", "no:logfire", "tests/test_pipeline.py", "-q"], capture_output=True, text=True)
     if test_proc.returncode != 0:
         print(f"❌ Pytest failed:\n{test_proc.stdout or test_proc.stderr}")
         test_suite_res = {"status": "FAILED", "exit_code": test_proc.returncode}
@@ -170,5 +170,12 @@ def run_reproducibility_pipeline(max_train_samples=3000, epochs=2):
 
 
 if __name__ == "__main__":
-    run_reproducibility_pipeline()
+    import argparse
+    parser = argparse.ArgumentParser(description="Deterministic Reproducibility Pipeline")
+    parser.add_argument("--seed", type=int, default=42, help="Global random seed")
+    parser.add_argument("--epochs", type=int, default=1, help="Training epochs")
+    parser.add_argument("--max-samples", type=int, default=3000, help="Max training samples")
+    args = parser.parse_args()
+    set_global_seed(args.seed)
+    run_reproducibility_pipeline(epochs=args.epochs, max_train_samples=args.max_samples)
 

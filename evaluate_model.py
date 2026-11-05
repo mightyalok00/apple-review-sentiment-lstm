@@ -331,12 +331,12 @@ def evaluate_hard_challenge_benchmark(lstm_model, tokenizer, metadata, baselines
     return hard_report, hard_texts, hard_labels, pipeline_hard_preds, lstm_probs
 
 
-def run_comprehensive_evaluation(max_eval_samples=5000):
+def run_comprehensive_evaluation(max_eval_samples=5000, seed=42):
     """
     Executes end-to-end scientific evaluation with cross-validation,
     OOD stress-testing, probability calibration, and qualitative failure-mode audits.
     """
-    set_seed(42)
+    set_seed(seed)
     from train_model import load_dataset
 
     df = load_dataset()
@@ -553,5 +553,11 @@ def run_comprehensive_evaluation(max_eval_samples=5000):
 
 
 if __name__ == "__main__":
-    run_comprehensive_evaluation()
+    import argparse
+    parser = argparse.ArgumentParser(description="Comprehensive Model Evaluation Suite")
+    parser.add_argument("--seed", type=int, default=42, help="Random seed")
+    parser.add_argument("--max-samples", type=int, default=5000, help="Max evaluation samples")
+    args = parser.parse_args()
+    set_seed(args.seed)
+    run_comprehensive_evaluation(max_eval_samples=args.max_samples, seed=args.seed)
 

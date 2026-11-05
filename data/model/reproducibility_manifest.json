@@ -1,5 +1,5 @@
 {
-  "reproduced_at_utc": "2026-11-05T12:02:29.951945+00:00",
+  "reproduced_at_utc": "2026-11-05T12:49:28.232815+00:00",
   "random_seed": 42,
   "environment": {
     "python": "3.14.7",
@@ -18,7 +18,7 @@
     },
     "model_training": {
       "status": "PASSED",
-      "loss": 0.0002182993048336357,
+      "loss": 0.0003868735220748931,
       "accuracy": 1.0,
       "vocab_size": 489,
       "max_len": 39,
@@ -33,15 +33,15 @@
     },
     "test_suite": {
       "status": "PASSED",
-      "summary": "18 passed in 22.14s"
+      "summary": "18 passed in 21.25s"
     }
   },
   "artifacts_checksums": {
-    "review_lstm_keras_sha256": "a96909093a43b81025aa5e4f334f0986b28875e2eaec0a061acfb4d19bc3875d",
-    "tokenizer_json_sha256": "6721839a5796c300fe521f72b12161e49257b3a7959c575baccabade41b7d37c",
-    "evaluation_report_json_sha256": "297c4bd65c86cf072d00a0d4344723c949b6f45058b2008b94b886a9e13bed5e",
-    "baseline_comparison_json_sha256": "192c703cefd1e85cbcc061af2a0a245a5235a0f8ae226fb617082d3ff4366fb0",
+    "review_lstm_keras_sha256": "33946a91ca924df5f3af69641dfd1add731505cac0c34655f3821f6103b3cdc3",
+    "tokenizer_json_sha256": "eae4ebb7244569aa39899a9dc2d2a525f399837f541b0749258c6da49e40103a",
+    "evaluation_report_json_sha256": "48fed0b693752a9fd0f81605f822d8fd70b23feaf9e4171189d0f80f18c9de78",
+    "baseline_comparison_json_sha256": "21db1aae9eae47965b9d9802e2ddf899cae82f1da066a2d8bc595a395f543ff7",
     "dataset_manifest_json_sha256": "34b1462cf5921d0d170da1e2bec88fed4fe9da1117419eb8edccde0e6fcc3351"
   },
-  "total_execution_seconds": 61.67
+  "total_execution_seconds": 43.68
 }

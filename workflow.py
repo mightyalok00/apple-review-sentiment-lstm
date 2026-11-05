@@ -220,7 +220,7 @@ def stage_run_tests():
             "error": "Test file tests/test_pipeline.py not found",
         }
 
-    cmd = [sys.executable, "-m", "pytest", str(test_file), "-q"]
+    cmd = [sys.executable, "-m", "pytest", "-p", "no:logfire", str(test_file), "-q"]
     proc = subprocess.run(cmd, capture_output=True, text=True)
     elapsed = round(time.time() - start_t, 2)
 

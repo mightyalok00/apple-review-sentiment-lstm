@@ -9,10 +9,10 @@
     "expected_calibration_error": 0.0,
     "cv_accuracy_mean": 1.0,
     "cv_accuracy_std": 0.0,
-    "train_time_sec": 0.003,
+    "train_time_sec": 0.004,
     "architecture": "TF-IDF (1-2 ngrams, 10k features) + MultinomialNB(alpha=0.5)",
-    "hard_challenge_accuracy": 0.6786,
-    "hard_challenge_macro_f1": 0.6488
+    "hard_challenge_accuracy": 0.6071,
+    "hard_challenge_macro_f1": 0.574
   },
   "Logistic Regression (Balanced)": {
     "accuracy": 1.0,
@@ -20,14 +20,14 @@
     "macro_f1": 1.0,
     "weighted_f1": 1.0,
     "roc_auc_ovr": 1.0,
-    "brier_score": 0.0005,
-    "expected_calibration_error": 0.0171,
+    "brier_score": 0.0011,
+    "expected_calibration_error": 0.0263,
     "cv_accuracy_mean": 1.0,
     "cv_accuracy_std": 0.0,
-    "train_time_sec": 0.038,
+    "train_time_sec": 0.037,
     "architecture": "TF-IDF (1-2 ngrams, 10k features) + LogisticRegression(L2, balanced)",
-    "hard_challenge_accuracy": 0.7857,
-    "hard_challenge_macro_f1": 0.782
+    "hard_challenge_accuracy": 0.75,
+    "hard_challenge_macro_f1": 0.7424
   },
   "Bidirectional LSTM (Neural Pipeline)": {
     "accuracy": 1.0,
@@ -36,7 +36,7 @@
     "weighted_f1": 1.0,
     "roc_auc_ovr": 1.0,
     "brier_score": 0.0,
-    "expected_calibration_error": 0.0002,
+    "expected_calibration_error": 0.0004,
     "hard_challenge_accuracy": 0.9643,
     "hard_challenge_macro_f1": 0.9666,
     "train_time_sec": 10.2,

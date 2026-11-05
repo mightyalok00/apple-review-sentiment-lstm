@@ -13,8 +13,8 @@
       "review_text": "Not great, but certainly not the worst phone on the market.",
       "true_sentiment": "neutral",
       "predicted_sentiment": "positive",
-      "confidence": 0.8756,
-      "true_class_probability": 0.0054,
+      "confidence": 0.9908,
+      "true_class_probability": 0.0028,
       "failure_mode": "NEGATION_REVERSAL"
     }
   ]

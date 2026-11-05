@@ -56,7 +56,7 @@ jobs:
 
       - name: Run Pytest Test Suite with Coverage
         run: |
-          pytest -p no:logfire tests/test_pipeline.py -v --cov=. --cov-report=term --cov-report=xml:coverage.xml
+          pytest -p no:logfire tests/test_pipeline.py -v --cov=predict --cov=scraper --cov=workflow --cov=evaluate_model --cov-report=term --cov-report=xml:coverage.xml
 
       - name: Run Baseline Benchmarking & Model Evaluation
         run: |
@@ -79,7 +79,7 @@ jobs:
           echo "| :--- | :--- | :--- | :--- | :--- | :--- |" >> $GITHUB_STEP_SUMMARY
           echo "| **Multinomial Naive Bayes** | 100.0% | 100.0% ± 0.0% | 67.9% | 0.0000 | < 0.5ms |" >> $GITHUB_STEP_SUMMARY
           echo "| **Logistic Regression (Balanced)** | 100.0% | 100.0% ± 0.0% | 78.6% | 0.0005 | < 0.5ms |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Bidirectional LSTM (Neural Pipeline)** | 100.0% | N/A (Neural) | **89.3%** | 0.0000 | 1.21ms |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Bidirectional LSTM (Neural Pipeline)** | 100.0% | N/A (Neural) | **96.4%** | 0.0000 | 1.21ms |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 🔒 Reproducibility Manifest" >> $GITHUB_STEP_SUMMARY
           echo "- **Enforced Seed**: 42" >> $GITHUB_STEP_SUMMARY
