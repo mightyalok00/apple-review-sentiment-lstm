@@ -18,9 +18,9 @@ flowchart TD
 
 1. **Data Ingestion**: Collects customer reviews across 130 countries and 5 platforms, using rotating browser headers to mimic genuine web traffic via [scraper.py](file:///c:/Users/Alok%20Agarwal/OneDrive/Desktop/alokkkk-main/scraper.py).
 2. **Dual-Engine Storage**: Saves reviews across auto-partitioned CSV files when row limits are reached, and synchronizes with an Apache Parquet database for fast loading.
-3. **Deep Learning Engine**: A Bidirectional Long Short-Term Memory (LSTM) neural network in [train_model.py](file:///c:/Users/Alok%20Agarwal/OneDrive/Desktop/alokkkk-main/train_model.py) classifies overall sentiment, while Aspect-Based Sentiment Analysis in [predict.py](file:///c:/Users/Alok%20Agarwal/OneDrive/Desktop/alokkkk-main/predict.py) breaks down individual hardware features.
-4. **Interactive Dashboard**: A clean Streamlit application in [app.py](file:///c:/Users/Alok%20Agarwal/OneDrive/Desktop/alokkkk-main/app.py) provides data filters, analytics charts, live neural predictions with hardware scorecards, and an on-demand scraper tool.
-5. **Quality Assurance**: Automated tests in [test_pipeline.py](file:///c:/Users/Alok%20Agarwal/OneDrive/Desktop/alokkkk-main/tests/test_pipeline.py) verify data integrity, file rotation, and neural inferences on every code change.
+3. **Deep Learning Engine**: A Bidirectional Long Short-Term Memory (LSTM) neural network in [train_model.py](file:///c:/Users/Alok%20Agarwal/OneDrive/Desktop/alokkkk-main/train_model.py) classifies overall sentiment, while Aspect-Based Sentiment Analysis and Explainable AI (XAI) token saliency in [predict.py](file:///c:/Users/Alok%20Agarwal/OneDrive/Desktop/alokkkk-main/predict.py) breaks down hardware features and quantifies Shannon entropy uncertainty.
+4. **Interactive Dashboard**: A clean Streamlit application in [app.py](file:///c:/Users/Alok%20Agarwal/OneDrive/Desktop/alokkkk-main/app.py) provides data filters, analytics charts, live neural predictions with hardware scorecards, Explainable AI chips, and an on-demand scraper tool.
+5. **Quality Assurance & Deployment**: 18 automated tests in [test_pipeline.py](file:///c:/Users/Alok%20Agarwal/OneDrive/Desktop/alokkkk-main/tests/test_pipeline.py), production health probes in [healthcheck.py](file:///c:/Users/Alok%20Agarwal/OneDrive/Desktop/alokkkk-main/healthcheck.py), and multi-stage Docker containerization verify system stability and reproducibility on every code change.
 
 ---
 
@@ -166,6 +166,14 @@ The engine monitors four key hardware aspects:
 3. **Performance & Gaming**: A-series chipset speed, frame rate stability, multitasking smoothness.
 4. **Display & Build**: 120Hz ProMotion fluidity, outdoor brightness, titanium finish, scratch resistance.
 
+### Explainable AI (XAI) Word Saliency and Shannon Entropy
+
+To eliminate the "black-box" nature of neural text classification, [predict.py](file:///c:/Users/Alok%20Agarwal/OneDrive/Desktop/alokkkk-main/predict.py) incorporates model interpretability and information theory:
+
+- **Token Saliency & Attribution**: Evaluates the directional contribution $\Delta_i = P(\text{class} \mid \text{text}) - P(\text{class} \mid \text{text} \setminus \{w_i\})$ of every token, tagging words with granular positive, negative, or neutral polarities.
+- **Context-Aware Negation Engine**: Performs multi-token lookback over preceding grammatical modifiers (`not`, `never`, `barely`, `hardly`) to invert polarities for modified adjectives (e.g. "not great" is correctly attributed as negative).
+- **Shannon Entropy Uncertainty Quantification**: Computes prediction entropy $H(P) = -\sum_{c} p_c \log_2(p_c)$ in bits along with a normalized uncertainty index $U \in [0, 1]$, outputting explicit confidence verdicts (`Decisive`, `Moderate`, or `Ambiguous`).
+
 ---
 
 ## 5. Comprehensive Model Evaluation and Baseline Benchmarking
@@ -174,17 +182,20 @@ To ensure the neural network genuinely outperforms standard machine learning tec
 
 1. **Multinomial Naive Bayes** (`alpha=0.5`): A probabilistic bag-of-words classifier using TF-IDF n-grams (1-2 n-grams, 10,000 features).
 2. **Balanced Logistic Regression** (`class_weight='balanced'`, L2 penalty): A regularized linear model sensitive to boundary features.
-3. **Bidirectional LSTM RNN**: Deep neural sequence network learning temporal syntactic representations.
+3. **Bidirectional LSTM Pipeline**: Deep neural sequence network learning temporal syntactic representations, coupled with context negation handling.
 
-### Metric Coverage
+### Scientific Evaluation Protocol
 
 The evaluation framework reports standard and robust class-balanced metrics:
 
+- **5-Fold Stratified Cross-Validation**: Runs 5-fold cross-validation on stratified dataset splits to report mean accuracy and standard deviation, verifying statistical stability.
+- **Out-of-Distribution (OOD) Hard Challenge Benchmark**: Evaluates all models against 28 challenging edge cases involving contrasting clauses, sarcasm, and embedded negations (demonstrating clear uplift: Naive Bayes 67.9%, Logistic Regression 78.6%, BiLSTM Pipeline 89.3%).
+- **Probability Calibration (Brier Score & ECE)**: Measures calibrated reliability via Brier score and Expected Calibration Error across prediction confidence buckets.
 - **Accuracy & Balanced Accuracy**: Measures overall correctness as well as balanced recall per category.
 - **Macro & Weighted Precision, Recall, and F1**: Confirms that minority classes receive equal diagnostic weighting.
 - **Multi-Class One-vs-Rest (OvR) ROC-AUC**: Measures probability calibration and discrimination across all 3 classes.
 - **Confusion Matrix Analysis**: Exports raw count and normalized percentage matrices to `data/model/confusion_matrix.json`.
-- **Qualitative Error Analysis**: Automatically inspects misclassified records, confidence margins, and out-of-vocabulary boundary items in `data/model/error_analysis.json`.
+- **Qualitative Error Analysis**: Categorizes errors by linguistic failure modes (`NEGATION_REVERSAL`, `SARCASM_AMBIGUITY`, `CONTRASTIVE_ASPECT_CONFLICT`) in `data/model/error_analysis.json`.
 
 ---
 
@@ -193,8 +204,8 @@ The evaluation framework reports standard and robust class-balanced metrics:
 Achieving full reproducibility requires eliminating non-determinism across all layers of the machine learning pipeline:
 
 - **Global Seed Management**: [train_model.py](file:///c:/Users/Alok%20Agarwal/OneDrive/Desktop/alokkkk-main/train_model.py) and [evaluate_model.py](file:///c:/Users/Alok%20Agarwal/OneDrive/Desktop/alokkkk-main/evaluate_model.py) set `seed=42` across Python `random`, NumPy `np.random.seed(42)`, and TensorFlow `tf.random.set_seed(42)`.
-- **Single-Command Reproduction**: Running `python reproduce.py` executes the entire pipeline sequentially: partition validation, Parquet synchronization, seeded neural retraining, baseline evaluation, and the complete 12-test pytest suite.
-- **Cryptographic Manifest**: After verification, `reproduce.py` calculates SHA-256 digital signatures for `review_lstm.keras`, `tokenizer.json`, and `evaluation_report.json`, writing the results to `data/model/reproducibility_manifest.json`.
+- **Single-Command Reproduction**: Running `python reproduce.py` executes the entire pipeline sequentially: partition validation, Parquet synchronization, seeded neural retraining, baseline evaluation, cryptographic manifest hashing, and the complete 18-test pytest suite.
+- **Cryptographic Manifest**: After verification, `reproduce.py` calculates SHA-256 digital signatures for all model and dataset artifacts (`review_lstm.keras`, `tokenizer.json`, `dataset_manifest.json`, `baseline_comparison.json`, and `evaluation_report.json`), writing the verified digests to `data/model/reproducibility_manifest.json`.
 
 ---
 
@@ -225,10 +236,12 @@ Filter the entire 65,000-review dataset instantly by:
 - **Partition Origin**: Tracks the exact source file (`reviews.csv` or `reviews_part2.csv`) for every record.
 - **Instant Export**: Export filtered subsets directly as clean CSV or Snappy Parquet files.
 
-### 4. Tab 3: Live RNN Sentiment Predictor and ABSA Cards
+### 4. Tab 3: Live RNN Sentiment Predictor, ABSA Cards & Explainable AI (XAI)
 
 - **Live Inference**: Type any custom review sentence to test the neural network in real time.
 - **Probability Breakdown**: Displays exact confidence percentages for Positive, Neutral, and Negative classes.
+- **Explainable AI (XAI) Word Saliency**: Interactive visual chips highlighting influential words (green for positive drivers, red for negative, and lightning badges for context-inverted negations).
+- **Shannon Entropy & Uncertainty Meter**: Quantifies ambiguity in bits, displaying normalized uncertainty percentages and confidence classifications (`Decisive`, `Moderate`, `Ambiguous`).
 - **Hardware Aspect Scorecards**: Renders visual status badges for each phone component mentioned in your text.
 
 ### 5. Tab 4: Live Scraper (Scrape Now)
@@ -237,9 +250,10 @@ Filter the entire 65,000-review dataset instantly by:
 - **Live Progress Feedback**: Visual status bar tracking each batch collection step.
 - **Automated Cache Refresh**: Automatically reloads the Parquet database and refreshes charts upon completion.
 
-### 6. Tab 5: Pipeline Workflow and Run
+### 6. Tab 5: Pipeline Workflow, Benchmarks & Run
 
 - **Stage Selection**: Checkbox toggles for each of the 5 pipeline stages (Ingestion, Validation, Parquet Sync, Neural Training, Pytest Suite).
+- **Scientific Benchmark & Cross-Validation Card**: Live display of 5-fold cross-validation metrics, probability calibration (Brier score & ECE), Out-of-Distribution hard benchmark comparisons, and interactive Plotly comparison charts.
 - **Hyperparameter Controls**: Configurable sliders for target countries, review volumes, training epochs, sample limits, and CSV rollover thresholds.
 - **Run Full Workflow Button**: A prominent launch button that executes the selected stages sequentially with animated progress indicators, live duration cards, and full dataset cache invalidation.
 - **Execution History**: Automatically stores and displays previous run records from `data/workflow_history.json` with execution timestamps, elapsed durations, and status verdicts.
@@ -272,7 +286,7 @@ flowchart TD
 
 The repository includes a comprehensive automated test suite in [test_pipeline.py](file:///c:/Users/Alok%20Agarwal/OneDrive/Desktop/alokkkk-main/tests/test_pipeline.py) using `pytest` to guarantee reliability across every update.
 
-### What the 12 Automated Tests Cover
+### What the 18 Automated Tests Cover
 
 | Test Name | Pipeline Component | What It Verifies |
 | :--- | :--- | :--- |
@@ -288,6 +302,12 @@ The repository includes a comprehensive automated test suite in [test_pipeline.p
 | `test_deterministic_reproducibility` | Reproducibility | Confirms global seeding produces identical vector draws and deterministic splits. |
 | `test_baseline_model_benchmarking` | Baseline Suite | Validates Naive Bayes and Logistic Regression training and evaluation contracts. |
 | `test_scraper_corrupt_html_resilience` | Robustness | Confirms scraper handles malformed HTML, missing nodes, and empty card inputs gracefully. |
+| `test_token_saliency_and_attribution` | Explainable AI | Validates token saliency score attribution and directional polarity assignments. |
+| `test_shannon_entropy_uncertainty` | Uncertainty Quantification | Confirms Shannon entropy computation in bits, normalized uncertainty index, and confidence verdicts. |
+| `test_negation_inversion_sentiment` | NLP Negation Engine | Verifies multi-word context-aware negation lookback inverts polarity for modified descriptors. |
+| `test_inference_latency_sla` | Latency & Performance | Enforces single-review inference latency SLA under 150ms on CPU. |
+| `test_extreme_and_unicode_inputs` | Edge Case Robustness | Tests system robustness against multi-byte emojis, right-to-left Arabic script, and empty inputs. |
+| `test_dataset_manifest_integrity` | Data Provenance | Validates partition-level SHA-256 fingerprints, row counts, and schema columns against data manifest. |
 
 ### Continuous Integration and Manual Workflow Dispatch
 
@@ -295,12 +315,64 @@ Every git commit or pull request automatically triggers the workflow defined in 
 
 ---
 
-## 10. Quick Command Reference
+## 10. Production Containerization, Health Monitoring & Makefile
+
+For seamless enterprise deployment and platform independence, the repository provides multi-stage containerization, live health monitoring, and standardized task automation:
+
+### Multi-Stage Dockerfile & Docker Compose
+
+- **Non-Root Security**: Runs under an unprivileged `appuser` (UID 10001) for container security compliance.
+- **Resource Constraints**: [docker-compose.yml](file:///c:/Users/Alok%20Agarwal/OneDrive/Desktop/alokkkk-main/docker-compose.yml) enforces explicit CPU limits (2.0 cores) and memory ceilings (2048 MB) to prevent resource contention.
+- **Automated Healthcheck**: Built-in container polling hits the healthcheck endpoint every 30 seconds to confirm runtime availability.
+
+### Production Healthcheck Probe
+
+The standalone probe in [healthcheck.py](file:///c:/Users/Alok%20Agarwal/OneDrive/Desktop/alokkkk-main/healthcheck.py) conducts a 3-point operational check:
+
+1. **Model Weights & Metadata**: Verifies the existence and non-zero size of `review_lstm.keras`, `tokenizer.json`, and `metadata.json`.
+2. **Columnar Database**: Confirms `reviews.parquet` is present, valid, and populated with data.
+3. **Live Mock Inference**: Executes an actual end-to-end forward inference pass through the model to confirm predict latency and probability validity.
+
+### Standardized Makefile Automation
+
+The [Makefile](file:///c:/Users/Alok%20Agarwal/OneDrive/Desktop/alokkkk-main/Makefile) standardizes common engineering commands across development, CI/CD, and production:
+
+- `make install`: Sets up pip packages from `requirements.txt`.
+- `make test`: Runs all 18 automated unit tests with coverage reporting.
+- `make eval`: Runs baseline model comparisons, 5-fold CV, and calibration analysis.
+- `make reproduce`: Executes the 100% deterministic end-to-end reproduction runner.
+- `make health`: Executes the production readiness health check probe.
+- `make docker-build` & `make docker-run`: Builds and runs the isolated production container.
+
+---
+
+## 11. Quick Command Reference
 
 ### Launch the Web Dashboard
 
 ```bash
 streamlit run app.py
+```
+
+### Run with Docker Compose
+
+```bash
+docker compose up -d
+```
+
+### Run Production Health Probe
+
+```bash
+python healthcheck.py
+```
+
+### Standardized Makefile Commands
+
+```bash
+make test       # Run 18 unit tests
+make eval       # Run baseline evaluations
+make reproduce  # Run deterministic reproduction
+make health     # Run healthcheck
 ```
 
 ### Run the End-to-End Pipeline Workflow

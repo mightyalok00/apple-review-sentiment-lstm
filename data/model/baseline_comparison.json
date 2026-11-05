@@ -5,8 +5,14 @@
     "macro_f1": 1.0,
     "weighted_f1": 1.0,
     "roc_auc_ovr": 1.0,
+    "brier_score": 0.0,
+    "expected_calibration_error": 0.0,
+    "cv_accuracy_mean": 1.0,
+    "cv_accuracy_std": 0.0,
     "train_time_sec": 0.002,
-    "architecture": "TF-IDF (1-2 ngrams, 10k features) + MultinomialNB(alpha=0.5)"
+    "architecture": "TF-IDF (1-2 ngrams, 10k features) + MultinomialNB(alpha=0.5)",
+    "hard_challenge_accuracy": 0.6071,
+    "hard_challenge_macro_f1": 0.574
   },
   "Logistic Regression (Balanced)": {
     "accuracy": 1.0,
@@ -14,16 +20,26 @@
     "macro_f1": 1.0,
     "weighted_f1": 1.0,
     "roc_auc_ovr": 1.0,
-    "train_time_sec": 0.037,
-    "architecture": "TF-IDF (1-2 ngrams, 10k features) + LogisticRegression(L2, balanced)"
+    "brier_score": 0.0011,
+    "expected_calibration_error": 0.0263,
+    "cv_accuracy_mean": 1.0,
+    "cv_accuracy_std": 0.0,
+    "train_time_sec": 0.043,
+    "architecture": "TF-IDF (1-2 ngrams, 10k features) + LogisticRegression(L2, balanced)",
+    "hard_challenge_accuracy": 0.75,
+    "hard_challenge_macro_f1": 0.7424
   },
-  "Bidirectional LSTM (Neural)": {
+  "Bidirectional LSTM (Neural Pipeline)": {
     "accuracy": 1.0,
     "balanced_accuracy": 1.0,
     "macro_f1": 1.0,
     "weighted_f1": 1.0,
     "roc_auc_ovr": 1.0,
+    "brier_score": 0.0,
+    "expected_calibration_error": 0.0002,
+    "hard_challenge_accuracy": 0.9643,
+    "hard_challenge_macro_f1": 0.9666,
     "train_time_sec": 10.2,
-    "architecture": "Embedding(128) + SpatialDropout(0.25) + BiLSTM(64) + Dense(32) + Softmax(3)"
+    "architecture": "BiLSTM(64) + SpatialDropout(0.25) + Attention Negation Engine"
   }
 }

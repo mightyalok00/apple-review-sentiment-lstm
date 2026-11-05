@@ -1,0 +1,45 @@
+{
+  "total_reviews": 65038,
+  "columns": [
+    "review_id",
+    "product",
+    "website",
+    "country",
+    "stars",
+    "rating_raw",
+    "text",
+    "review_date",
+    "source_url",
+    "scraped_at_utc",
+    "_source_file"
+  ],
+  "null_counts": {
+    "review_id": 0,
+    "product": 0,
+    "website": 0,
+    "country": 0,
+    "stars": 0,
+    "rating_raw": 0,
+    "text": 0,
+    "review_date": 0,
+    "source_url": 0,
+    "scraped_at_utc": 0,
+    "_source_file": 0
+  },
+  "unique_ids": 65038,
+  "unique_countries": 130,
+  "partitions": {
+    "reviews.csv": {
+      "sha256": "91000184a4b9c8e530a7b993a1938690fd644bbb8ed40202d97e07f6c9a6f48c",
+      "size_bytes": 27537024
+    },
+    "reviews_part2.csv": {
+      "sha256": "5e325d62d8ade27fd929fb59269a5f60bb1a6d45af3fc031cb018bc4bf95dd32",
+      "size_bytes": 14293
+    },
+    "reviews.parquet": {
+      "sha256": "64453d7c2e12014ecdc5cca09f2bb93e190d2e638cf384b2128530249ac8868f",
+      "size_bytes": 6964828
+    }
+  }
+}

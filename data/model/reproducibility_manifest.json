@@ -1,5 +1,5 @@
 {
-  "reproduced_at_utc": "2026-11-05T11:07:19.448853+00:00",
+  "reproduced_at_utc": "2026-11-05T12:02:29.951945+00:00",
   "random_seed": 42,
   "environment": {
     "python": "3.14.7",
@@ -29,17 +29,19 @@
       "lstm_accuracy": 1.0,
       "lstm_macro_f1": 1.0,
       "lstm_roc_auc": 1.0,
-      "error_count": 0
+      "error_count": 1
     },
     "test_suite": {
       "status": "PASSED",
-      "summary": "12 passed in 20.58s"
+      "summary": "18 passed in 22.14s"
     }
   },
   "artifacts_checksums": {
-    "review_lstm_keras_sha256": "78f4e5d041b2002851b4800c9acd3298fd51ec87245538ed11d3e9143aa2ddd5",
-    "tokenizer_json_sha256": "ddfe1ce73fc8a7246d9038606cd6daa556c45c4db71c2270bdacb2fa80c39a0a",
-    "evaluation_report_json_sha256": "0d353931eab52ec0a3dedea630d9a538bdb686bdc0d90a7863049441ab3bf5d3"
+    "review_lstm_keras_sha256": "a96909093a43b81025aa5e4f334f0986b28875e2eaec0a061acfb4d19bc3875d",
+    "tokenizer_json_sha256": "6721839a5796c300fe521f72b12161e49257b3a7959c575baccabade41b7d37c",
+    "evaluation_report_json_sha256": "297c4bd65c86cf072d00a0d4344723c949b6f45058b2008b94b886a9e13bed5e",
+    "baseline_comparison_json_sha256": "192c703cefd1e85cbcc061af2a0a245a5235a0f8ae226fb617082d3ff4366fb0",
+    "dataset_manifest_json_sha256": "34b1462cf5921d0d170da1e2bec88fed4fe9da1117419eb8edccde0e6fcc3351"
   },
-  "total_execution_seconds": 61.01
+  "total_execution_seconds": 61.67
 }

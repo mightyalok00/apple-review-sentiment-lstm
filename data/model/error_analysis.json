@@ -1,6 +1,21 @@
 {
-  "total_test_samples": 600,
-  "total_errors": 0,
-  "error_rate": 0.0,
-  "sample_misclassifications": []
+  "hard_challenge_sample_count": 28,
+  "total_hard_challenge_errors": 1,
+  "error_rate": 0.0357,
+  "failure_mode_breakdown": {
+    "NEGATION_REVERSAL": 1,
+    "SARCASM_AMBIGUITY": 0,
+    "CONTRASTIVE_ASPECT_CONFLICT": 0,
+    "BOUNDARY_DRIFT": 0
+  },
+  "audited_misclassifications": [
+    {
+      "review_text": "Not great, but certainly not the worst phone on the market.",
+      "true_sentiment": "neutral",
+      "predicted_sentiment": "positive",
+      "confidence": 0.8756,
+      "true_class_probability": 0.0054,
+      "failure_mode": "NEGATION_REVERSAL"
+    }
+  ]
 }

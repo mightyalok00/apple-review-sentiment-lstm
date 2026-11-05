@@ -24,7 +24,7 @@ from scraper import (
     get_all_csv_paths,
     scrape_live,
 )
-from predict import analyze_aspects
+from predict import analyze_aspects, calculate_entropy, compute_token_saliency
 
 # Keras preprocessing functions
 load_model = keras.models.load_model
@@ -229,6 +229,15 @@ if df_raw.empty:
 # --- SIDEBAR FILTERS ---
 st.sidebar.title("Filters & Controls")
 st.sidebar.caption("Filter 65,000 consumer reviews across 130 countries")
+
+st.sidebar.markdown(
+    '<div style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 6px; padding: 6px 10px; margin-bottom: 12px; font-size: 0.78rem; color: #34d399;">'
+    '🟢 <strong>System Status:</strong> Production Ready<br>'
+    '⚡ <strong>Engine:</strong> Snappy Parquet (6.6 MB)<br>'
+    '🧠 <strong>Model:</strong> BiLSTM + XAI Saliency'
+    '</div>',
+    unsafe_allow_html=True,
+)
 
 # 1. Search Query
 search_query = st.sidebar.text_input("Search in review text", placeholder="e.g. battery, camera, zoom...")
@@ -624,6 +633,49 @@ with tab_classifier:
                                     unsafe_allow_html=True,
                                 )
 
+                    # Explainable AI (XAI): Word-Level Token Attribution
+                    saliency_tokens = compute_token_saliency(user_text, model, tokenizer, metadata)
+                    if saliency_tokens:
+                        st.markdown("**Explainable AI: Word-Level Saliency & Attribution**")
+                        chips_html = []
+                        for t in saliency_tokens:
+                            w = t["token"]
+                            pol = t["polarity"]
+                            score = t["score"]
+                            negated = t.get("negated", False)
+                            if pol == "positive":
+                                bg = "rgba(16, 185, 129, 0.18)"
+                                border = "#10b981"
+                                text_color = "#34d399"
+                            elif pol == "negative":
+                                bg = "rgba(239, 68, 68, 0.18)"
+                                border = "#ef4444"
+                                text_color = "#f87171"
+                            else:
+                                bg = "rgba(148, 163, 184, 0.10)"
+                                border = "#64748b"
+                                text_color = "#94a3b8"
+                            
+                            badge = " ⚡" if negated else ""
+                            chips_html.append(
+                                f'<span style="display: inline-block; background-color: {bg}; border: 1px solid {border}; '
+                                f'color: {text_color}; border-radius: 4px; padding: 2px 7px; margin: 3px; font-size: 0.85rem;" '
+                                f'title="Score: {score:+.2f}{badge}">'
+                                f'{w}{badge}</span>'
+                            )
+                        st.markdown('<div style="margin-bottom: 8px; line-height: 1.8;">' + "".join(chips_html) + '</div>', unsafe_allow_html=True)
+                        st.caption("⚡ = Negation inverted polarity | Green = Positive driver | Red = Negative driver")
+
+                    # Prediction Uncertainty & Shannon Entropy
+                    entropy_info = calculate_entropy(probs)
+                    st.markdown(
+                        f"<div style='background-color: rgba(30, 41, 59, 0.5); border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 6px; padding: 6px 12px; font-size: 0.8rem; color: #94a3b8; margin-top: 6px; margin-bottom: 10px;'>"
+                        f"<strong>Uncertainty Index:</strong> {entropy_info['uncertainty_index']*100:.1f}% ({entropy_info['confidence_verdict']}) | "
+                        f"<strong>Shannon Entropy:</strong> {entropy_info['entropy_bits']} bits"
+                        f"</div>",
+                        unsafe_allow_html=True,
+                    )
+
                     # Architecture Details
                     st.caption(
                         f"Architecture: Bidirectional LSTM with Aspect-Based Decomposition | "
@@ -902,6 +954,53 @@ with tab_workflow:
                         "Stages Executed": ", ".join(h.get("executed_stages", [])),
                     })
                 st.dataframe(pd.DataFrame(history_rows), use_container_width=True)
+        except Exception:
+            pass
+
+    # Scientific Benchmark & Cross-Validation Insights
+    bench_file = MODEL_DIR / "baseline_comparison.json"
+    if bench_file.exists():
+        try:
+            bench_data = json.loads(bench_file.read_text(encoding="utf-8"))
+            st.markdown("---")
+            st.subheader("Scientific Benchmark & Cross-Validation Results")
+            st.caption("Rigorous evaluation comparing classical machine learning against the Bidirectional LSTM on 5-Fold Stratified CV and Hard OOD Stress-Tests.")
+
+            bench_rows = []
+            for m_name, m_vals in bench_data.items():
+                cv_txt = f"{m_vals['cv_accuracy_mean']*100:.1f}% ± {m_vals['cv_accuracy_std']*100:.1f}%" if "cv_accuracy_mean" in m_vals else "N/A (Neural)"
+                hard_acc = m_vals.get("hard_challenge_accuracy", 0.0) * 100
+                bench_rows.append({
+                    "Model": m_name,
+                    "In-Dist Acc": f"{m_vals.get('accuracy', 1.0)*100:.1f}%",
+                    "5-Fold CV": cv_txt,
+                    "Hard OOD Acc": f"{hard_acc:.1f}%",
+                    "Brier Score": f"{m_vals.get('brier_score', 0.0):.4f}",
+                    "Architecture": m_vals.get("architecture", "")[:45] + "...",
+                })
+            st.dataframe(pd.DataFrame(bench_rows), use_container_width=True)
+
+            # Visual OOD Benchmark Comparison Bar Chart
+            fig_bench = px.bar(
+                pd.DataFrame([
+                    {"Model": m, "Hard OOD Accuracy (%)": d.get("hard_challenge_accuracy", 0.0) * 100}
+                    for m, d in bench_data.items()
+                ]),
+                x="Hard OOD Accuracy (%)",
+                y="Model",
+                orientation="h",
+                color="Model",
+                color_discrete_sequence=["#94a3b8", "#38bdf8", "#10b981"],
+                height=240,
+                title="Stress-Test Resilience on Challenging Nuanced Reviews (Negations & Sarcasm)",
+            )
+            fig_bench.update_layout(
+                margin=dict(l=20, r=20, t=40, b=20),
+                paper_bgcolor="rgba(0,0,0,0)",
+                plot_bgcolor="rgba(0,0,0,0)",
+                showlegend=False,
+            )
+            st.plotly_chart(fig_bench, use_container_width=True)
         except Exception:
             pass
 

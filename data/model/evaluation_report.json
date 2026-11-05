@@ -8,8 +8,12 @@
   "weighted_f1": 1.0,
   "roc_auc_ovr": 1.0,
   "log_loss": 0.0002,
+  "brier_score": 0.0,
+  "expected_calibration_error": 0.0002,
   "test_samples": 600,
-  "inference_latency_ms": 1.23,
+  "inference_latency_ms": 0.94,
+  "hard_challenge_accuracy": 0.9643,
+  "hard_challenge_macro_f1": 0.9666,
   "per_class": {
     "negative": {
       "precision": 1.0,

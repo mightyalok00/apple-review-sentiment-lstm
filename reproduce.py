@@ -155,6 +155,8 @@ def run_reproducibility_pipeline(max_train_samples=3000, epochs=2):
             "review_lstm_keras_sha256": compute_file_sha256(MODEL_DIR / "review_lstm.keras"),
             "tokenizer_json_sha256": compute_file_sha256(MODEL_DIR / "tokenizer.json"),
             "evaluation_report_json_sha256": compute_file_sha256(MODEL_DIR / "evaluation_report.json"),
+            "baseline_comparison_json_sha256": compute_file_sha256(MODEL_DIR / "baseline_comparison.json"),
+            "dataset_manifest_json_sha256": compute_file_sha256(DATA_DIR / "dataset_manifest.json"),
         },
         "total_execution_seconds": total_sec,
     }

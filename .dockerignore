@@ -1,0 +1,28 @@
+# Git and version control
+.git
+.gitignore
+.github
+
+# Python cache & virtual environment
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Deep learning temp caches
+.keras/
+data/raw_html/
+
+# System files
+.DS_Store
+Thumbs.db
+*.log
+*.tmp

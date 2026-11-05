@@ -224,4 +224,101 @@ def test_scraper_corrupt_html_resilience():
     assert first_text(None, "") == ""
 
 
+def test_token_saliency_and_attribution():
+    """Verify that Explainable AI (XAI) token saliency extracts valid word scores."""
+    from predict import compute_token_saliency
+
+    text = "The camera is wonderful, but battery drains quickly."
+    saliency = compute_token_saliency(text)
+    assert isinstance(saliency, list)
+    assert len(saliency) > 0
+    words = [item["token"] for item in saliency]
+    assert "camera" in words
+    assert "drains" in words
+    for item in saliency:
+        assert "score" in item
+        assert item["polarity"] in ("positive", "negative", "neutral")
+
+
+def test_shannon_entropy_uncertainty():
+    """Verify that Shannon entropy accurately gauges model decision ambiguity."""
+    from predict import calculate_entropy
+
+    # Highly decisive distribution (e.g. 99% confident)
+    decisive = calculate_entropy([0.99, 0.005, 0.005])
+    assert decisive["uncertainty_index"] < 0.20
+    assert "Decisive" in decisive["confidence_verdict"]
+
+    # Maximum ambiguity distribution (1/3, 1/3, 1/3)
+    ambiguous = calculate_entropy([0.333, 0.333, 0.334])
+    assert ambiguous["uncertainty_index"] > 0.90
+    assert "Ambiguous" in ambiguous["confidence_verdict"]
+
+
+def test_negation_inversion_sentiment():
+    """Verify that contextual negation handling shifts sentiment polarity."""
+    from predict import predict
+
+    # "not bad" should shift sentiment away from negative
+    sentiment_not_bad, probs_not_bad = predict("The battery life is definitely not bad at all.")
+    assert sentiment_not_bad in ("positive", "neutral")
+
+    # "not good" should shift sentiment away from positive
+    sentiment_not_good, probs_not_good = predict("The screen quality is not good at all, completely washed out.")
+    assert sentiment_not_good in ("negative", "neutral")
+
+
+def test_inference_latency_sla():
+    """Verify that single inference latency satisfies production SLA (< 150ms on warm cache)."""
+    import time
+    from predict import predict
+
+    # Warm up cache
+    predict("Warmup query for latency test.")
+
+    t0 = time.time()
+    predict("Phenomenal 120Hz display and camera performance.")
+    elapsed_ms = (time.time() - t0) * 1000
+    assert elapsed_ms < 150.0, f"Inference took {elapsed_ms:.2f}ms, exceeding 150ms SLA"
+
+
+def test_extreme_and_unicode_inputs():
+    """Verify model resilience against empty text, emojis, and extreme token lengths."""
+    from predict import predict
+
+    # Empty and whitespace text
+    label, probs = predict("   ")
+    assert label in ("negative", "neutral", "positive")
+
+    # Pure emojis
+    label_emoji, _ = predict("📱🔥😍🍎")
+    assert label_emoji in ("negative", "neutral", "positive")
+
+    # Extreme length (2500 characters)
+    long_review = "Great phone with awesome screen. " * 75
+    label_long, _ = predict(long_review)
+    assert label_long in ("negative", "neutral", "positive")
+
+
+def test_dataset_manifest_integrity():
+    """Verify that data/dataset_manifest.json exists and checksums match live disk files."""
+    import hashlib
+    import json
+    from pathlib import Path
+
+    manifest_file = Path("data/dataset_manifest.json")
+    assert manifest_file.exists(), "data/dataset_manifest.json must exist"
+
+    manifest = json.loads(manifest_file.read_text(encoding="utf-8"))
+    assert manifest["total_reviews"] >= 60000
+    assert "reviews.parquet" in manifest["partitions"]
+
+    # Verify SHA-256 for reviews.parquet
+    pq_path = Path("data/reviews.parquet")
+    if pq_path.exists():
+        h = hashlib.sha256(pq_path.read_bytes()).hexdigest()
+        assert manifest["partitions"]["reviews.parquet"]["sha256"] == h
+
+
+
 

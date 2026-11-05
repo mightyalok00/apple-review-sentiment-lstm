@@ -1,0 +1,195 @@
+[
+  {
+    "timestamp": "2026-11-05T14:31:20.376080",
+    "overall_status": "SUCCESS",
+    "total_elapsed_sec": 26.95,
+    "executed_stages": [
+      "partition",
+      "parquet",
+      "test"
+    ],
+    "stage_results": {
+      "partition": {
+        "status": "SUCCESS",
+        "stage": "Partition Validation",
+        "elapsed_sec": 0.63,
+        "details": {
+          "total_reviews": 65008,
+          "unique_ids": 65008,
+          "duplicates_detected": 0,
+          "partitions": [
+            {
+              "filename": "reviews.csv",
+              "rows": 65006,
+              "at_capacity": true
+            },
+            {
+              "filename": "reviews_part2.csv",
+              "rows": 2,
+              "at_capacity": false
+            }
+          ],
+          "na_code_preserved": true
+        }
+      },
+      "parquet": {
+        "status": "SUCCESS",
+        "stage": "Parquet Synchronization",
+        "elapsed_sec": 0.61,
+        "details": {
+          "parquet_file": "reviews.parquet",
+          "file_size_mb": 6.64,
+          "total_rows": 65008,
+          "columns": [
+            "review_id",
+            "product",
+            "website",
+            "country",
+            "stars",
+            "rating_raw",
+            "text",
+            "review_date",
+            "source_url",
+            "scraped_at_utc",
+            "_source_file"
+          ],
+          "compression": "snappy"
+        }
+      },
+      "test": {
+        "status": "SUCCESS",
+        "stage": "Pytest Verification",
+        "elapsed_sec": 22.92,
+        "details": {
+          "exit_code": 0,
+          "passed_tests": 8,
+          "summary": "8 passed, 6 warnings in 17.57s"
+        }
+      }
+    }
+  },
+  {
+    "timestamp": "2026-11-05T14:31:50.420276",
+    "overall_status": "FAILED",
+    "total_elapsed_sec": 19.83,
+    "executed_stages": [
+      "train"
+    ],
+    "stage_results": {
+      "train": {
+        "status": "FAILED",
+        "stage": "Neural LSTM Model Retraining",
+        "elapsed_sec": 0.0,
+        "error": "'label'"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-11-05T14:32:40.977720",
+    "overall_status": "SUCCESS",
+    "total_elapsed_sec": 27.36,
+    "executed_stages": [
+      "train"
+    ],
+    "stage_results": {
+      "train": {
+        "status": "SUCCESS",
+        "stage": "Model Retraining",
+        "elapsed_sec": 10.27,
+        "details": {
+          "epochs": 1,
+          "training_samples": 999,
+          "test_accuracy": 100.0,
+          "test_loss": 0.342,
+          "vocab_size": 486,
+          "max_sequence_len": 38
+        }
+      }
+    }
+  },
+  {
+    "timestamp": "2026-11-05T14:36:23.910477",
+    "overall_status": "SUCCESS",
+    "total_elapsed_sec": 28.23,
+    "executed_stages": [
+      "scrape",
+      "partition",
+      "parquet",
+      "test"
+    ],
+    "stage_results": {
+      "scrape": {
+        "status": "SUCCESS",
+        "stage": "Ingestion & Scraping",
+        "elapsed_sec": 2.72,
+        "details": {
+          "reviews_scraped": 30,
+          "countries_count": 3,
+          "countries": [
+            "US",
+            "CA",
+            "MX"
+          ],
+          "reviews_per_country": 10
+        }
+      },
+      "partition": {
+        "status": "SUCCESS",
+        "stage": "Partition Validation",
+        "elapsed_sec": 0.46,
+        "details": {
+          "total_reviews": 65038,
+          "unique_ids": 65038,
+          "duplicates_detected": 0,
+          "partitions": [
+            {
+              "filename": "reviews.csv",
+              "rows": 65006,
+              "at_capacity": true
+            },
+            {
+              "filename": "reviews_part2.csv",
+              "rows": 32,
+              "at_capacity": false
+            }
+          ],
+          "na_code_preserved": true
+        }
+      },
+      "parquet": {
+        "status": "SUCCESS",
+        "stage": "Parquet Synchronization",
+        "elapsed_sec": 0.54,
+        "details": {
+          "parquet_file": "reviews.parquet",
+          "file_size_mb": 6.64,
+          "total_rows": 65038,
+          "columns": [
+            "review_id",
+            "product",
+            "website",
+            "country",
+            "stars",
+            "rating_raw",
+            "text",
+            "review_date",
+            "source_url",
+            "scraped_at_utc",
+            "_source_file"
+          ],
+          "compression": "snappy"
+        }
+      },
+      "test": {
+        "status": "SUCCESS",
+        "stage": "Pytest Verification",
+        "elapsed_sec": 23.58,
+        "details": {
+          "exit_code": 0,
+          "passed_tests": 9,
+          "summary": "9 passed, 6 warnings in 18.71s"
+        }
+      }
+    }
+  }
+]
