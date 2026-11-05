@@ -92,7 +92,7 @@ def calculate_entropy(probabilities):
     h = -float(np.sum(probs * np.log2(probs)))
     max_h = math.log2(len(probs))
     normalized_uncertainty = round(min(1.0, max(0.0, h / max_h)), 4)
-    
+
     if normalized_uncertainty < 0.35:
         verdict = "Decisive (High Confidence)"
     elif normalized_uncertainty < 0.70:

@@ -1,10 +1,17 @@
 {
-  "venvPath": ".",
-  "venv": ".venv",
-  "extraPaths": [
+  "include": [
     "."
   ],
-  "reportMissingTypeStubs": false,
-  "reportImplicitImport": false,
-  "reportUnnecessaryTypeCasting": false
+  "exclude": [
+    "**/node_modules",
+    "**/.venv"
+  ],
+  "extraPaths": [
+    ".",
+    "C:/Users/Alok Agarwal/AppData/Local/Programs/Python/Python314/Lib/site-packages"
+  ],
+  "typeCheckingMode": "off",
+  "reportMissingImports": false,
+  "reportMissingModuleSource": false,
+  "reportMissingTypeStubs": false
 }

@@ -17,7 +17,6 @@ import pandas as pd
 from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
 from sklearn.utils.class_weight import compute_class_weight
-
 from tensorflow import keras
 
 pad_sequences = keras.preprocessing.sequence.pad_sequences
@@ -282,7 +281,7 @@ def train_model(epochs=10, max_samples=None, batch_size=None, verbose=1):
     MODEL_DIR.mkdir(parents=True, exist_ok=True)
     model.save(MODEL_PATH)
     TOKENIZER_PATH.write_text(tokenizer.to_json(), encoding="utf-8")
-    
+
     metadata_payload = {
         "max_len": max_len,
         "class_names": CLASS_NAMES,
@@ -304,7 +303,7 @@ def train_model(epochs=10, max_samples=None, batch_size=None, verbose=1):
         "accuracy": float(accuracy),
         "vocab_size": int(vocab_size),
         "max_len": int(max_len),
-        "samples": int(len(df)),
+        "samples": len(df),
     }
 
 

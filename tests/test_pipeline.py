@@ -24,7 +24,7 @@ def test_stable_id_determinism():
     id1 = stable_id("iPhone 16 Pro", "US", "Battery lasts all day.", "5.0 out of 5 stars", "2026-11-05")
     id2 = stable_id("iPhone 16 Pro", "US", "Battery lasts all day.", "5.0 out of 5 stars", "2026-11-05")
     id_diff = stable_id("iPhone 16 Pro", "CA", "Battery lasts all day.", "5.0 out of 5 stars", "2026-11-05")
-    
+
     assert id1 == id2, "Identical records must yield identical stable IDs"
     assert id1 != id_diff, "Different countries must yield different stable IDs"
     assert len(id1) == 64, "SHA-256 hash must be 64 characters long"

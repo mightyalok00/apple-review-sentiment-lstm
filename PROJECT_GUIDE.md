@@ -188,6 +188,7 @@ To ensure the Bidirectional LSTM neural network genuinely outperforms classical 
 ### The 1,000-Sample Authentic Real-World Customer Benchmark
 
 To directly address synthetic template memorization and ensure authentic real-world performance, the model is evaluated on [data/authentic_reviews_eval.json](file:///c:/Users/Alok%20Agarwal/OneDrive/Desktop/alokkkk-main/data/authentic_reviews_eval.json):
+
 - **1,000 Verified Customer Reviews**: Spanning 24 iPhone models, 30 countries, and 5 platforms.
 - **Independent Linguistic Ground Truth**: Annotated from textual discourse rather than star-rating proxies.
 - **Natural Colloquial Phrasing**: Idiomatic slang, run-on sentences, micro-scratches, thermal throttling, and varied lengths with zero template overlap.
@@ -218,12 +219,14 @@ Large transformer models achieve high accuracy on unstructured text but are ofte
 ### Paired Statistical Significance (McNemar's Chi-Squared Test)
 
 On the 1,000-sample authentic customer review benchmark, McNemar's paired test with Edwards continuity correction ($\\chi^2 = \\frac{(|b - c| - 1)^2}{b + c}$) proves statistically significant superiority over linear baselines:
+
 - **BiLSTM vs. Multinomial Naive Bayes**: $\\chi^2 = 46.02, p < 0.0001$ ( < 0.001$, highly statistically significant)
 - **BiLSTM vs. Logistic Regression**: $\\chi^2 = 47.11, p < 0.0001$ ( < 0.001$, highly statistically significant)
 
 ### Zero-Shot Domain Generalization Matrix
 
 The evaluation suite validates zero-shot transfer stability across unseen distributions (data/model/generalization_benchmark.json):
+
 1. **Geographic Domain Transfer**:
    - In-Domain Western (US, CA, GB, DE, FR): **74.1% accuracy** (174 reviews)
    - Held-Out Latin America (BR, AR, MX, CL): **62.1% accuracy** (66 reviews)
@@ -239,6 +242,7 @@ The evaluation suite validates zero-shot transfer stability across unseen distri
 ### Lexical Diversity and Vocabulary Perplexity Audit
 
 To transparently diagnose historical training templates versus authentic reviews, [data/model/lexical_diversity_audit.json](file:///c:/Users/Alok%20Agarwal/OneDrive/Desktop/alokkkk-main/data/model/lexical_diversity_audit.json) computes:
+
 - **Type-Token Ratio (TTR)**: Authentic benchmark achieves **0.0379 vs. 0.0148** (**2.6x higher vocabulary diversity**).
 - **Shannon Vocabulary Entropy**: **8.71 bits** in authentic benchmark vs. 7.98 bits in synthetic templates.
 - **Hapax Legomena Ratio**: 48.7% of words appear only once in natural customer discourse, confirming the complete absence of template repetition.
@@ -246,6 +250,7 @@ To transparently diagnose historical training templates versus authentic reviews
 ### Rating-vs-Linguistic Sentiment Divergence Analysis
 
 Customer reviews occasionally present conflicting signals where star ratings contradict textual sentiment:
+
 - **Conflicting Test Cases**: 48 review samples where star ratings conflict with linguistic intent.
 - **BiLSTM Neural Pipeline Accuracy**: **70.8% correct resolution** of textual meaning.
 - **Multinomial Naive Bayes Accuracy**: **25.0%**

@@ -79,7 +79,7 @@ HARD_CHALLENGE_SAMPLES = [
     ("Never laggy, face unlock works seamlessly in total darkness.", 2),
     ("I wouldn't say the screen is bad, but it is definitely dimmer than advertised.", 1),
     ("No complaints whatsoever with battery health after six months.", 2),
-    
+
     # Contrastive & Compound Clauses
     ("Phenomenal 4K HDR camera zoom, but the battery drains ridiculously fast and heats up.", 0),
     ("The display is buttery smooth at 120Hz, though customer service refused to honor warranty.", 0),
@@ -87,7 +87,7 @@ HARD_CHALLENGE_SAMPLES = [
     ("Terrible audio speakers, but the screen and gaming speed are second to none.", 2),
     ("Arrived with minor box scuffs, however the phone itself performs like a dream.", 2),
     ("Amazing titanium chassis and aesthetics, but constant cellular dropouts ruin the experience.", 0),
-    
+
     # Sarcasm & Informal Expressions
     ("Oh wonderful, another $1300 paperweight that shuts down at 20% battery.", 0),
     ("Brilliant idea to remove the SIM tray and charge extra for basic cables.", 0),
@@ -145,7 +145,7 @@ def compute_calibration_metrics(y_true, y_probs):
     """
     n_samples = len(y_true)
     num_classes = y_probs.shape[1]
-    
+
     # Multi-class Brier Score: 1/N * sum((p_ik - y_ik)^2)
     y_one_hot = np.zeros((n_samples, num_classes))
     for i, label in enumerate(y_true):
@@ -996,7 +996,7 @@ def run_comprehensive_evaluation(max_eval_samples=5000, seed=42):
     mcc = float(matthews_corrcoef(y_test, predictions))
     acc_ci = compute_bootstrap_ci(y_test, predictions, accuracy_score)
     f1_ci = compute_bootstrap_ci(y_test, predictions, lambda yt, yp: f1_score(yt, yp, average="macro", zero_division=0))
-    
+
     try:
         auc = float(roc_auc_score(y_test, probabilities, multi_class="ovr"))
     except (ValueError, TypeError):

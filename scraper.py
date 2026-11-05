@@ -791,7 +791,7 @@ def main():
             c_input = int(countries_arg)
         else:
             c_input = [c.strip() for c in countries_arg.split(",") if c.strip()]
-        
+
         def cli_progress(cur, tot, msg):
             if cur % 10 == 0 or cur == tot:
                 print(f"[{cur}/{tot}] {msg}")

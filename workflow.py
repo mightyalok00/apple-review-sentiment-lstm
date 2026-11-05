@@ -10,7 +10,6 @@ Orchestrates:
 
 import argparse
 import json
-import os
 import subprocess
 import sys
 import time
@@ -80,6 +79,7 @@ def stage_scrape(countries=5, reviews_per_country=20, max_rows=50000, progress_c
 def stage_validate_and_partition(max_rows=50000):
     """Stage 2: Validate CSV partition integrity, check schema, and verify deduplication."""
     import pandas as pd
+
     from scraper import get_all_csv_paths
 
     start_t = time.time()

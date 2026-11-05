@@ -187,7 +187,7 @@ To eliminate bias, prevent data leakage, and establish publication-grade credibi
 7. **Expected Calibration Error (ECE) & Reliability**: 10-bin empirical probability calibration and multi-class Brier score.
 8. **Formal Data Leakage Audit**: Full train-test split independence verification certifying zero string duplicates.
 
-### Comprehensive Benchmark: Authentic Customer Reviews & Transformer Baseline
+### 1,000-Sample Authentic Real-World Customer Benchmark
 
 Empirical evaluation executed across 1,000 authentic customer reviews, out-of-distribution stress samples, and in-distribution splits:
 

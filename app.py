@@ -15,6 +15,7 @@ import plotly.graph_objects as go
 import streamlit as st
 from tensorflow import keras
 
+from predict import analyze_aspects, calculate_entropy, compute_token_saliency
 from scraper import (
     COUNTRIES_130,
     DEFAULT_WEBSITES,
@@ -24,7 +25,6 @@ from scraper import (
     get_all_csv_paths,
     scrape_live,
 )
-from predict import analyze_aspects, calculate_entropy, compute_token_saliency
 
 # Keras preprocessing functions
 load_model = keras.models.load_model
@@ -55,7 +55,7 @@ st.markdown(
     .stApp {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
-    
+
     /* Metrics card styling */
     div[data-testid="stMetric"] {
         background-color: rgba(30, 41, 59, 0.45);
@@ -64,7 +64,7 @@ st.markdown(
         padding: 16px 20px;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
     }
-    
+
     div[data-testid="stMetricLabel"] p {
         font-size: 0.85rem;
         font-weight: 500;
@@ -72,20 +72,20 @@ st.markdown(
         letter-spacing: 0.02em;
         text-transform: uppercase;
     }
-    
+
     div[data-testid="stMetricValue"] div {
         font-size: 1.85rem;
         font-weight: 700;
         color: #f8fafc;
     }
-    
+
     /* Subtle container borders */
     .stTabs [data-baseweb="tab-list"] {
         gap: 12px;
         border-bottom: 1px solid rgba(148, 163, 184, 0.18);
         padding-bottom: 4px;
     }
-    
+
     .stTabs [data-baseweb="tab"] {
         padding: 8px 18px;
         font-weight: 500;
@@ -197,7 +197,7 @@ def load_data():
         return pd.DataFrame()
 
     df = pd.concat(dfs, ignore_index=True).drop_duplicates(subset=["review_id"])
-    
+
     # Pre-derive series and sentiment label
     def get_series(prod):
         p = str(prod).lower()
@@ -205,7 +205,7 @@ def load_data():
             if f"iphone {s}" in p:
                 return f"iPhone {s} Series"
         return "Other iPhone"
-        
+
     def get_sentiment(stars):
         try:
             s = float(stars)
@@ -456,7 +456,7 @@ if top_run_eval or sb_run_eval:
                     "ECE (10-Bin)": f"{float(m_data.get('expected_calibration_error', 0.0)):.4f}",
                 })
             st.dataframe(pd.DataFrame(b_rows), use_container_width=True)
-            
+
             leak_info = eval_output.get("data_leakage_audit", {})
             if leak_info:
                 st.markdown(
@@ -542,7 +542,7 @@ with tab_analytics:
             rating_counts = filtered_df["stars"].value_counts().sort_index().reset_index()
             rating_counts.columns = ["stars", "count"]
             rating_counts["stars_label"] = rating_counts["stars"].astype(str) + " Stars"
-            
+
             fig_stars = px.bar(
                 rating_counts,
                 x="stars_label",
@@ -588,7 +588,7 @@ with tab_analytics:
 # === TAB 2: EXPLORER & EXPORT ===
 with tab_explorer:
     st.subheader(f"Filtered Records ({len(filtered_df):,} Total)")
-    
+
     # CSV Partition Inventory info
     all_partitions = get_all_csv_paths()
     partition_info = " | ".join([f"`{p.name}` ({count_csv_rows(p):,} rows)" for p in all_partitions])
@@ -649,7 +649,7 @@ with tab_classifier:
 
         with pred_col1:
             st.markdown("**Enter or Select a Review to Analyze**")
-            
+
             # Quick samples for fast testing
             sample_options = [
                 "Custom Text (type below)",
@@ -659,7 +659,7 @@ with tab_classifier:
                 "Face unlock works instantly and software is completely smooth. Zero frame drops.",
             ]
             chosen_sample = st.selectbox("Quick Presets", sample_options)
-            
+
             if chosen_sample == "Custom Text (type below)":
                 default_text = "The optical camera stabilization and battery life exceeded all my expectations. Flawless build."
             else:
@@ -773,7 +773,7 @@ with tab_classifier:
                                 bg = "rgba(148, 163, 184, 0.10)"
                                 border = "#64748b"
                                 text_color = "#94a3b8"
-                            
+
                             badge = " ⚡" if negated else ""
                             chips_html.append(
                                 f'<span style="display: inline-block; background-color: {bg}; border: 1px solid {border}; '
@@ -813,7 +813,7 @@ with tab_scraper:
 
     with scrap_col1:
         st.markdown("### Country & Volume Controls")
-        
+
         country_input_mode = st.radio(
             "Country Selection Mode",
             options=["Specify Number of Countries", "Pick Specific Country Codes"],
