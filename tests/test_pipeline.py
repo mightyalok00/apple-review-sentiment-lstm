@@ -347,5 +347,85 @@ def test_dataset_manifest_integrity():
     assert "stars" in df_pq.columns
 
 
+def test_statistical_significance_mcnemar():
+    """Verify McNemar's paired chi-squared test calculation and significance detection."""
+    from evaluate_model import run_mcnemar_test
+
+    # When both models make identical predictions
+    y_true = np.array([0, 1, 2, 0, 1, 2])
+    preds_identical = np.array([0, 1, 2, 0, 1, 2])
+    res_ident = run_mcnemar_test(y_true, preds_identical, preds_identical)
+    assert res_ident["chi2_stat"] == 0.0
+    assert res_ident["p_value"] == 1.0
+    assert not res_ident["significant"]
+
+    # When Model A strongly outperforms Model B
+    y_true_large = np.array([0] * 50 + [1] * 50)
+    preds_a = y_true_large.copy()  # 100% accurate
+    preds_b = np.array([1] * 30 + [0] * 20 + [0] * 30 + [1] * 20)  # 40% accurate
+    res_diff = run_mcnemar_test(y_true_large, preds_a, preds_b)
+    assert res_diff["chi2_stat"] > 10.0
+    assert res_diff["p_value"] < 0.001
+    assert res_diff["significant"] is True
+    assert res_diff["discordant_a"] == 60
+    assert res_diff["discordant_b"] == 0
+
+
+def test_bootstrap_confidence_intervals_and_leakage_audit():
+    """Verify non-parametric bootstrap confidence intervals and data leakage audit."""
+    from sklearn.metrics import accuracy_score
+    from evaluate_model import compute_bootstrap_ci, audit_data_leakage
+
+    # Bootstrap CI bounds
+    y_true = np.array([0, 0, 1, 1, 2, 2] * 20)
+    y_pred = y_true.copy()
+    lower, upper = compute_bootstrap_ci(y_true, y_pred, accuracy_score, n_bootstraps=50)
+    assert 0.95 <= lower <= 1.0
+    assert 0.95 <= upper <= 1.0
+
+    # Leakage Audit with no overlap
+    train_texts = ["iPhone 16 battery life is amazing.", "Camera quality exceeded expectations."]
+    test_texts = ["The display screen feels very responsive.", "Charging speed could be improved."]
+    audit_clean = audit_data_leakage(train_texts, test_texts)
+    assert audit_clean["exact_duplicates"] == 0
+    assert audit_clean["leakage_detected"] is False
+    assert audit_clean["audit_verdict"] == "VERIFIED_ZERO_LEAKAGE"
+
+    # Leakage Audit with intentional overlap
+    test_texts_leaked = ["iPhone 16 battery life is amazing.", "A totally new review."]
+    audit_leak = audit_data_leakage(train_texts, test_texts_leaked)
+    assert audit_leak["exact_duplicates"] == 1
+    assert audit_leak["leakage_detected"] is True
+    assert audit_leak["audit_verdict"] == "WARNING_OVERLAP_DETECTED"
+
+
+def test_subgroup_slices_and_calibration():
+    """Verify subpopulation slicing and calibration curve points generation."""
+    from evaluate_model import compute_subgroup_slices, generate_calibration_curve_points
+
+    texts = [
+        "Terrible battery.",  # Short, Negation
+        "The OLED display is not bad but the speaker is weak.",  # Medium, Negation, Contrastive
+        "I have been using this phone for three weeks and although the titanium frame is nice the battery drains fast.",  # Long, Contrastive
+    ]
+    y_true = np.array([0, 1, 0])
+    y_pred = np.array([0, 1, 0])
+
+    slices = compute_subgroup_slices(texts, y_true, y_pred)
+    assert "Short Reviews (<= 10 words)" in slices
+    assert "Negation-Bearing Sentences" in slices
+    assert "Contrastive Clause Sentences" in slices
+    assert slices["Short Reviews (<= 10 words)"]["sample_count"] == 1
+    assert slices["Short Reviews (<= 10 words)"]["accuracy"] == 1.0
+
+    # Calibration points
+    probs = np.array([[0.95, 0.03, 0.02], [0.1, 0.85, 0.05], [0.92, 0.05, 0.03]])
+    calib_pts = generate_calibration_curve_points(y_true, probs, n_bins=10)
+    assert len(calib_pts) > 0
+    assert "mean_confidence" in calib_pts[0]
+    assert "empirical_accuracy" in calib_pts[0]
+
+
+
 
 

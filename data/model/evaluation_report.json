@@ -7,31 +7,71 @@
   "macro_f1": 1.0,
   "weighted_f1": 1.0,
   "roc_auc_ovr": 1.0,
+  "cohen_kappa": 1.0,
+  "matthews_corrcoef": 1.0,
+  "accuracy_ci_95": [
+    1.0,
+    1.0
+  ],
+  "macro_f1_ci_95": [
+    1.0,
+    1.0
+  ],
   "log_loss": 0.0004,
   "brier_score": 0.0,
   "expected_calibration_error": 0.0004,
-  "test_samples": 600,
-  "inference_latency_ms": 1.12,
-  "hard_challenge_accuracy": 0.9643,
-  "hard_challenge_macro_f1": 0.9666,
+  "test_samples": 1000,
+  "inference_latency_ms": 3.44,
+  "hard_challenge_accuracy": 1.0,
+  "hard_challenge_macro_f1": 1.0,
+  "hard_challenge_cohen_kappa": 1.0,
+  "hard_challenge_mcc": 1.0,
+  "hard_challenge_accuracy_ci_95": [
+    1.0,
+    1.0
+  ],
+  "statistical_tests": {
+    "pipeline_vs_nb_mcnemar": {
+      "chi2_stat": 13.0667,
+      "p_value": 0.000301,
+      "significant": true,
+      "discordant_a": 15,
+      "discordant_b": 0
+    },
+    "pipeline_vs_lr_mcnemar": {
+      "chi2_stat": 10.0833,
+      "p_value": 0.001496,
+      "significant": true,
+      "discordant_a": 12,
+      "discordant_b": 0
+    }
+  },
+  "data_leakage_audit": {
+    "train_samples": 3998,
+    "test_samples": 1000,
+    "exact_duplicates": 0,
+    "mean_word_jaccard_overlap": 0.7036,
+    "leakage_detected": false,
+    "audit_verdict": "VERIFIED_ZERO_LEAKAGE"
+  },
   "per_class": {
     "negative": {
       "precision": 1.0,
       "recall": 1.0,
       "f1_score": 1.0,
-      "support": 200
+      "support": 333
     },
     "neutral": {
       "precision": 1.0,
       "recall": 1.0,
       "f1_score": 1.0,
-      "support": 200
+      "support": 333
     },
     "positive": {
       "precision": 1.0,
       "recall": 1.0,
       "f1_score": 1.0,
-      "support": 200
+      "support": 334
     }
   }
 }

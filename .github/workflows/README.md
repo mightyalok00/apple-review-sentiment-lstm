@@ -20,7 +20,7 @@ Click the button above or follow these direct steps to manually execute the end-
    - `partition,parquet,test` (Standard Fast CI - Recommended)
    - `all` (Full 5-Stage Pipeline including web scraper and neural retraining)
    - `partition,parquet` (Data engineering validation only)
-   - `test` (Pytest 18-test suite execution only)
+   - `test` (Pytest 21-test suite execution only)
 4. Click the green **"Run workflow"** button to start execution.
 
 ---
@@ -39,7 +39,7 @@ You can also trigger workflow stages interactively from the live application:
 ### Option 3: Run Locally via Command Line
 
 ```bash
-# Run data validation, Parquet sync, and 18-test pytest suite
+# Run data validation, Parquet sync, and 21-test pytest suite
 python workflow.py --stages partition,parquet,test
 
 # Run all 5 stages headlessly
@@ -56,3 +56,4 @@ make workflow-run
 | File | Purpose | Trigger Events |
 | :--- | :--- | :--- |
 | [`ci.yml`](file:///c:/Users/Alok%20Agarwal/OneDrive/Desktop/alokkkk-main/.github/workflows/ci.yml) | End-to-end testing, syntax verification, model evaluation benchmarks, reproducibility manifest, and pipeline orchestration | `push`, `pull_request`, `workflow_dispatch` (Manual) |
+

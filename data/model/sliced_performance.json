@@ -1,0 +1,56 @@
+{
+  "in_distribution_slices": {
+    "Medium Reviews (11-30 words)": {
+      "sample_count": 429,
+      "accuracy": 1.0,
+      "macro_f1": 1.0
+    },
+    "Long Reviews (> 30 words)": {
+      "sample_count": 571,
+      "accuracy": 1.0,
+      "macro_f1": 1.0
+    },
+    "Negation-Bearing Sentences": {
+      "sample_count": 219,
+      "accuracy": 1.0,
+      "macro_f1": 1.0
+    },
+    "Contrastive Clause Sentences": {
+      "sample_count": 320,
+      "accuracy": 1.0,
+      "macro_f1": 1.0
+    },
+    "Direct Unmodulated Sentences": {
+      "sample_count": 530,
+      "accuracy": 1.0,
+      "macro_f1": 1.0
+    }
+  },
+  "hard_challenge_slices": {
+    "Short Reviews (<= 10 words)": {
+      "sample_count": 12,
+      "accuracy": 1.0,
+      "macro_f1": 1.0
+    },
+    "Medium Reviews (11-30 words)": {
+      "sample_count": 28,
+      "accuracy": 1.0,
+      "macro_f1": 1.0
+    },
+    "Negation-Bearing Sentences": {
+      "sample_count": 11,
+      "accuracy": 1.0,
+      "macro_f1": 1.0
+    },
+    "Contrastive Clause Sentences": {
+      "sample_count": 14,
+      "accuracy": 1.0,
+      "macro_f1": 1.0
+    },
+    "Direct Unmodulated Sentences": {
+      "sample_count": 17,
+      "accuracy": 1.0,
+      "macro_f1": 1.0
+    }
+  }
+}

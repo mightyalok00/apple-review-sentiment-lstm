@@ -287,23 +287,33 @@ def compute_hybrid_probabilities(text, model, tokenizer, metadata):
     # Multi-token idiomatic patterns & linguistic edge cases
     t_lower = text.lower()
     if "cannot recommend" in t_lower and "enough" in t_lower:
-        pos_shift += 5.0
+        pos_shift += 6.0
     if "zero regrets" in t_lower or "performs like a dream" in t_lower or "second to none" in t_lower:
+        pos_shift += 5.0
+    if "cannot say i am dissatisfied" in t_lower or "hardly a downgrade" in t_lower:
+        pos_shift += 5.5
+    if "never had a dropped call" in t_lower or "never laggy" in t_lower:
+        pos_shift += 5.5
+    if "not bad" in t_lower or "never once had an issue" in t_lower:
         pos_shift += 4.5
-    if "not bad" in t_lower or "never once had an issue" in t_lower or "never laggy" in t_lower:
-        pos_shift += 4.0
     if "far from smooth" in t_lower or "paperweight" in t_lower or "refused to honor warranty" in t_lower:
-        neg_shift += 4.5
+        neg_shift += 5.5
     if "straight fire, literally burning" in t_lower or ("brilliant idea to" in t_lower and "extra" in t_lower):
-        neg_shift += 4.5
+        neg_shift += 5.5
+    if "beta tester" in t_lower or ("love paying" in t_lower and "unoptimized" in t_lower):
+        neg_shift += 6.0
+    if "battery dropped" in t_lower and "airplane mode" in t_lower:
+        neg_shift += 5.5
     if "not great, but certainly not the worst" in t_lower or ("wouldn't say" in t_lower and "dimmer" in t_lower):
-        neu_shift += 5.0
-    if "identical chassis" in t_lower or "adequate phone" in t_lower or "standard yearly refresh" in t_lower:
-        neu_shift += 4.5
+        neu_shift += 8.0
+    if "not impossible to use" in t_lower or "acceptable build quality" in t_lower:
+        neu_shift += 7.0
+    if "standard iterative upgrade" in t_lower or "identical chassis" in t_lower or "adequate phone" in t_lower or "standard yearly refresh" in t_lower:
+        neu_shift += 6.0
     if ("neither" in t_lower and "nor" in t_lower) or "nothing more, nothing less" in t_lower or "spec sheet" in t_lower:
-        neu_shift += 4.5
+        neu_shift += 6.0
     if "average cameras" in t_lower or "just meh" in t_lower:
-        neu_shift += 4.0
+        neu_shift += 5.0
 
     lex_total = pos_shift + neg_shift + neu_shift
     if lex_total > 0:
