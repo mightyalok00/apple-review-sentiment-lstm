@@ -1,5 +1,6 @@
 # Apple Review Intelligence and Sentiment RNN
 
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://apple-review-sentiment-lstm.streamlit.app/)
 [![Pipeline & CI Workflow](https://github.com/mightyalok00/apple-review-sentiment-lstm/actions/workflows/ci.yml/badge.svg)](https://github.com/mightyalok00/apple-review-sentiment-lstm/actions/workflows/ci.yml)
 [![Tests](https://img.shields.io/badge/pytest-9%20passed-brightgreen.svg)](tests/)
 [![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.14-blue.svg)](https://www.python.org/)
@@ -9,6 +10,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 An end-to-end data engineering and deep learning intelligence platform for collecting, analyzing, and predicting customer sentiment across Apple consumer hardware products globally.
+
+> **Live Web Application**: Experience the interactive dashboard directly at [apple-review-sentiment-lstm.streamlit.app](https://apple-review-sentiment-lstm.streamlit.app/).
 
 The system ingests verified consumer reviews from 130 countries across 5 major e-commerce platforms, manages high-speed partitioned storage with sub-second queries, classifies text with a Bidirectional LSTM neural network, and isolates component-specific hardware feedback via Aspect-Based Sentiment Analysis.
 
@@ -66,7 +69,7 @@ flowchart LR
 
 ## Interactive Web Dashboard
 
-Launch the unified Streamlit intelligence center:
+Experience the live deployed application at [apple-review-sentiment-lstm.streamlit.app](https://apple-review-sentiment-lstm.streamlit.app/), or run it locally:
 
 ```bash
 streamlit run app.py

@@ -170,7 +170,7 @@ The engine monitors four key hardware aspects:
 
 ## 5. How the Web Application Works
 
-The Streamlit dashboard in [app.py](file:///c:/Users/Alok%20Agarwal/OneDrive/Desktop/alokkkk-main/app.py) is structured into four main functional areas:
+The web application is deployed live at [apple-review-sentiment-lstm.streamlit.app](https://apple-review-sentiment-lstm.streamlit.app/). The local dashboard in [app.py](file:///c:/Users/Alok%20Agarwal/OneDrive/Desktop/alokkkk-main/app.py) is structured into five main functional tabs:
 
 ### 1. Multi-Dimensional Sidebar Filters
 
