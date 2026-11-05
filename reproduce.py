@@ -65,7 +65,7 @@ def run_reproducibility_pipeline(max_train_samples=3000, epochs=2):
     set_global_seed(42)
 
     print("\n" + "=" * 75)
-    print(" 🔁 APPLE REVIEW INTELLIGENCE: DETERMINISTIC REPRODUCIBILITY RUNNER")
+    print(" [REPRODUCE] APPLE REVIEW INTELLIGENCE: DETERMINISTIC REPRODUCIBILITY RUNNER")
     print("=" * 75)
     print(f" Timestamp:        {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print(f" Python Version:   {platform.python_version()} ({platform.system()} {platform.machine()})")
@@ -78,7 +78,7 @@ def run_reproducibility_pipeline(max_train_samples=3000, epochs=2):
 
     csv_paths = get_all_csv_paths()
     total_reviews = sum(count_csv_rows(p) for p in csv_paths)
-    print(f"  ✓ Found {len(csv_paths)} CSV partition files with {total_reviews:,} total reviews.")
+    print(f"  [OK] Found {len(csv_paths)} CSV partition files with {total_reviews:,} total reviews.")
     data_validation_res = {
         "status": "PASSED",
         "total_reviews": total_reviews,
@@ -93,7 +93,7 @@ def run_reproducibility_pipeline(max_train_samples=3000, epochs=2):
     if not pq_path or not pq_path.exists():
         raise RuntimeError("Failed to create data/reviews.parquet")
     pq_size_mb = round(pq_path.stat().st_size / (1024 * 1024), 2)
-    print(f"  ✓ reviews.parquet synchronized ({pq_size_mb} MB snappy compressed).")
+    print(f"  [OK] reviews.parquet synchronized ({pq_size_mb} MB snappy compressed).")
     parquet_sync_res = {
         "status": "PASSED",
         "parquet_size_mb": pq_size_mb,
@@ -104,7 +104,7 @@ def run_reproducibility_pipeline(max_train_samples=3000, epochs=2):
     from train_model import train_model
 
     train_res = train_model(epochs=epochs, max_samples=max_train_samples, verbose=0)
-    print(f"  ✓ Retraining complete: Accuracy = {train_res['accuracy'] * 100:.2f}% | Loss = {train_res['loss']:.4f}")
+    print(f"  [OK] Retraining complete: Accuracy = {train_res['accuracy'] * 100:.2f}% | Loss = {train_res['loss']:.4f}")
     model_training_res = {
         "status": "PASSED",
         **train_res,
@@ -115,7 +115,7 @@ def run_reproducibility_pipeline(max_train_samples=3000, epochs=2):
     from evaluate_model import run_comprehensive_evaluation
 
     eval_res = run_comprehensive_evaluation(max_eval_samples=max_train_samples)
-    print("  ✓ Classical baselines evaluated & confusion matrix generated.")
+    print("  [OK] Classical baselines evaluated & confusion matrix generated.")
     evaluation_res = {
         "status": "PASSED",
         "lstm_accuracy": eval_res["lstm_report"]["accuracy"],
@@ -129,10 +129,10 @@ def run_reproducibility_pipeline(max_train_samples=3000, epochs=2):
     print("\n[Step 5/5] Executing automated pytest test suite...")
     test_proc = subprocess.run([sys.executable, "-m", "pytest", "-p", "no:logfire", "tests/test_pipeline.py", "-q"], capture_output=True, text=True)
     if test_proc.returncode != 0:
-        print(f"❌ Pytest failed:\n{test_proc.stdout or test_proc.stderr}")
+        print(f"[FAIL] Pytest failed:\n{test_proc.stdout or test_proc.stderr}")
         test_suite_res = {"status": "FAILED", "exit_code": test_proc.returncode}
     else:
-        print("  ✓ All automated unit tests passed.")
+        print("  [OK] All automated unit tests passed.")
         test_suite_res = {"status": "PASSED", "summary": test_proc.stdout.strip().splitlines()[-1]}
 
     total_sec = round(time.time() - t_start, 2)
@@ -170,7 +170,7 @@ def run_reproducibility_pipeline(max_train_samples=3000, epochs=2):
     MANIFEST_PATH.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     print(f"\n[OK] Reproducibility manifest saved to: {MANIFEST_PATH}")
     print("=" * 75)
-    print(f" 🏁 REPRODUCIBILITY CONFIRMED: 100% Deterministic (Total Elapsed: {total_sec}s)")
+    print(f" [PASS] REPRODUCIBILITY CONFIRMED: Deterministic pipeline verified (Total Elapsed: {total_sec}s)")
     print("=" * 75 + "\n")
     return manifest
 

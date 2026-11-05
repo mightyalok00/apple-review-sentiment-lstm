@@ -42,7 +42,6 @@ METADATA_PATH = MODEL_DIR / "metadata.json"
 # Page configuration
 st.set_page_config(
     page_title="Apple Review Intelligence | Global RNN",
-    page_icon="📱",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -257,9 +256,9 @@ st.sidebar.caption("Filter 65,000 consumer reviews across 130 countries")
 
 st.sidebar.markdown(
     '<div style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 6px; padding: 6px 10px; margin-bottom: 12px; font-size: 0.78rem; color: #34d399;">'
-    '🟢 <strong>System Status:</strong> Production Ready<br>'
-    '⚡ <strong>Engine:</strong> Snappy Parquet (6.6 MB)<br>'
-    '🧠 <strong>Model:</strong> BiLSTM + XAI Saliency'
+    '<strong>System Status:</strong> Production Ready<br>'
+    '<strong>Engine:</strong> Snappy Parquet (6.6 MB)<br>'
+    '<strong>Model:</strong> BiLSTM + Saliency Map'
     '</div>',
     unsafe_allow_html=True,
 )
@@ -267,18 +266,18 @@ st.sidebar.markdown(
 # Quick Action Trigger Buttons in Sidebar (Touch & Mobile Friendly)
 st.sidebar.markdown(
     '<div style="background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 8px; padding: 8px 12px; margin-bottom: 10px;">'
-    '<span style="font-size: 0.85rem; font-weight: 600; color: #38bdf8;">⚡ Quick Actions (Mobile / Desktop)</span>'
+    '<span style="font-size: 0.85rem; font-weight: 600; color: #38bdf8;">Quick Actions</span>'
     '</div>',
     unsafe_allow_html=True,
 )
 sb_col1, sb_col2 = st.sidebar.columns(2)
 with sb_col1:
-    sb_run_pipeline = st.sidebar.button("▶️ Run Pipeline", key="sb_btn_pipeline", use_container_width=True, help="Run validation, Parquet sync & 21 tests")
+    sb_run_pipeline = st.sidebar.button("Run Pipeline", key="sb_btn_pipeline", use_container_width=True, help="Run validation, Parquet sync & 21 tests")
 with sb_col2:
-    sb_run_eval = st.sidebar.button("🔬 Evaluate", key="sb_btn_eval", use_container_width=True, help="Run evaluate_model.py")
+    sb_run_eval = st.sidebar.button("Evaluate", key="sb_btn_eval", use_container_width=True, help="Run evaluate_model.py")
 
 st.sidebar.link_button(
-    "🚀 GitHub Actions Run",
+    "GitHub Actions Workflow",
     "https://github.com/mightyalok00/apple-review-sentiment-lstm/actions/workflows/ci.yml",
     use_container_width=True,
     help="Trigger remote CI/CD workflow in GitHub Actions",
@@ -385,7 +384,7 @@ neg_pct = (filtered_df["sentiment"] == "Negative").sum() / total_count * 100 if 
 with kpi1:
     st.metric("Total Reviews", f"{total_count:,}", delta=f"{total_count - len(df_raw):,}" if total_count < len(df_raw) else "Full Base")
 with kpi2:
-    st.metric("Avg Rating", f"{avg_rating:.2f} ★")
+    st.metric("Avg Rating", f"{avg_rating:.2f} / 5.0")
 with kpi3:
     st.metric("Positive Sentiment", f"{pos_pct:.1f}%")
 with kpi4:
@@ -397,24 +396,22 @@ st.write("")
 
 # --- RESPONSIVE WORKFLOW & EVALUATION RUN BAR (MOBILE & DESKTOP) ---
 st.markdown(
-    '<div style="background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.85) 100%); '
-    'border: 1px solid rgba(56, 189, 248, 0.28); border-radius: 12px; padding: 12px 18px; margin-bottom: 12px; '
-    'box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);">'
-    '<span style="font-size: 1.05rem; font-weight: 700; color: #38bdf8;">⚡ One-Click Pipeline & Evaluation Launcher</span>'
-    '<span style="float: right; font-size: 0.82rem; color: #94a3b8; font-weight: 500;">📱 Mobile & 🖥️ Desktop Optimized</span><br>'
-    '<span style="font-size: 0.83rem; color: #cbd5e1;">Trigger local verification workflows, launch deep academic evaluation (<code>evaluate_model.py</code>), or dispatch remote GitHub Actions with 1 click.</span>'
+    '<div style="background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(56, 189, 248, 0.2); '
+    'border-radius: 8px; padding: 10px 14px; margin-bottom: 12px;">'
+    '<span style="font-size: 1rem; font-weight: 600; color: #38bdf8;">Pipeline & Evaluation Launcher</span><br>'
+    '<span style="font-size: 0.83rem; color: #94a3b8;">Trigger local verification workflows, launch model evaluation (<code>evaluate_model.py</code>), or open GitHub Actions.</span>'
     '</div>',
     unsafe_allow_html=True,
 )
 
 col_run_top1, col_run_top2, col_run_top3 = st.columns([1, 1, 1])
 with col_run_top1:
-    top_run_wf = st.button("▶️ Run Full Pipeline (CI)", key="top_run_pipeline", type="primary", use_container_width=True, help="Runs partition validation, Snappy Parquet synchronization, and 21 automated unit tests")
+    top_run_wf = st.button("Run Full Pipeline (CI)", key="top_run_pipeline", type="primary", use_container_width=True, help="Runs partition validation, Snappy Parquet synchronization, and 21 automated unit tests")
 with col_run_top2:
-    top_run_eval = st.button("🔬 Run Model Evaluation (evaluate_model.py)", key="top_run_eval", use_container_width=True, help="Executes evaluate_model.py with 95% bootstrap CIs, McNemar statistical tests, calibration curves, and leakage audit")
+    top_run_eval = st.button("Run Model Evaluation (evaluate_model.py)", key="top_run_eval", use_container_width=True, help="Executes evaluate_model.py with 95% bootstrap CIs, McNemar statistical tests, calibration curves, and leakage audit")
 with col_run_top3:
     st.link_button(
-        "🚀 GitHub Actions Run Workflow",
+        "GitHub Actions Workflow",
         "https://github.com/mightyalok00/apple-review-sentiment-lstm/actions/workflows/ci.yml",
         use_container_width=True,
         help="Open remote GitHub Actions workflow dispatch page in browser",
@@ -427,10 +424,10 @@ if top_run_wf or sb_run_pipeline:
         wf_report = run_full_pipeline(stages=["partition", "parquet", "test"], verbose=False)
         st.cache_data.clear()
         if wf_report["overall_status"] == "SUCCESS":
-            st.success(f"🎉 **Pipeline Completed Successfully!** Total duration: **{wf_report['total_elapsed_sec']}s** across {len(wf_report['executed_stages'])} stages.")
+            st.success(f"**Pipeline Completed Successfully.** Total duration: **{wf_report['total_elapsed_sec']}s** across {len(wf_report['executed_stages'])} stages.")
         else:
-            st.warning(f"⚠️ **Pipeline Completed with Warnings:** {wf_report['total_elapsed_sec']}s elapsed.")
-        with st.expander("🔍 View Live Pipeline Execution Telemetry", expanded=True):
+            st.warning(f"**Pipeline Completed with Warnings:** {wf_report['total_elapsed_sec']}s elapsed.")
+        with st.expander("Pipeline Execution Telemetry", expanded=True):
             st.json(wf_report)
 
 if top_run_eval or sb_run_eval:
@@ -438,8 +435,8 @@ if top_run_eval or sb_run_eval:
     with st.spinner("Running Academic Evaluation Suite (evaluate_model.py): 95% CIs, McNemar tests, 10-bin calibration, and data leakage audit..."):
         eval_output = run_comprehensive_evaluation(max_eval_samples=3000, seed=42)
         st.cache_data.clear()
-        st.success("🎉 **Academic Model Evaluation Completed!** All benchmarks, statistical tests, and calibration curves updated.")
-        with st.expander("📊 View Live Model Evaluation & Credibility Report", expanded=True):
+        st.success("**Academic Model Evaluation Completed.** All benchmarks, statistical tests, and calibration curves updated.")
+        with st.expander("Model Evaluation & Credibility Report", expanded=True):
             b_comp = eval_output.get("baseline_comparison", {})
             b_rows = []
             for m_name, m_data in b_comp.items():
@@ -460,7 +457,7 @@ if top_run_eval or sb_run_eval:
             leak_info = eval_output.get("data_leakage_audit", {})
             if leak_info:
                 st.markdown(
-                    f"🛡️ **Data Separation Audit:** `{leak_info.get('audit_verdict', 'VERIFIED_ZERO_LEAKAGE')}` | "
+                    f"**Data Separation Audit:** `{leak_info.get('audit_verdict', 'VERIFIED_ZERO_LEAKAGE')}` | "
                     f"Exact Duplicates: `{leak_info.get('exact_duplicates', 0)}` | "
                     f"Holdout Samples: `{leak_info.get('test_samples', 0):,}`"
                 )
@@ -472,8 +469,8 @@ tab_analytics, tab_explorer, tab_classifier, tab_scraper, tab_workflow = st.tabs
     "Analytics & Visualizations",
     "Review Explorer & Export",
     "Live RNN Sentiment Predictor",
-    "⚡ Live Scraper (Scrape Now)",
-    "🔄 Pipeline Workflow & Run",
+    "Live Scraper (Scrape Now)",
+    "Pipeline Workflow & Run",
 ])
 
 # === TAB 1: ANALYTICS ===
@@ -774,7 +771,7 @@ with tab_classifier:
                                 border = "#64748b"
                                 text_color = "#94a3b8"
 
-                            badge = " ⚡" if negated else ""
+                            badge = " [NEG]" if negated else ""
                             chips_html.append(
                                 f'<span style="display: inline-block; background-color: {bg}; border: 1px solid {border}; '
                                 f'color: {text_color}; border-radius: 4px; padding: 2px 7px; margin: 3px; font-size: 0.85rem;" '
@@ -782,7 +779,7 @@ with tab_classifier:
                                 f'{w}{badge}</span>'
                             )
                         st.markdown('<div style="margin-bottom: 8px; line-height: 1.8;">' + "".join(chips_html) + '</div>', unsafe_allow_html=True)
-                        st.caption("⚡ = Negation inverted polarity | Green = Positive driver | Red = Negative driver")
+                        st.caption("[NEG] = Negation inverted polarity | Green = Positive driver | Red = Negative driver")
 
                     # Prediction Uncertainty & Shannon Entropy
                     entropy_info = calculate_entropy(probs)
@@ -893,12 +890,12 @@ with tab_scraper:
         active_file = get_active_csv_path(max_rows=max_rows_limit)
         active_rows = count_csv_rows(active_file)
         if active_rows >= max_rows_limit:
-            st.warning(f"⚠️ Target `{active_file.name}` is at capacity ({active_rows:,}/{max_rows_limit:,} rows). New scrape will create a new CSV!")
+            st.warning(f"Target `{active_file.name}` is at capacity ({active_rows:,}/{max_rows_limit:,} rows). New scrape will create a new CSV.")
         else:
-            st.caption(f"📁 **Destination CSV:** `{active_file.name}` ({active_rows:,} / {max_rows_limit:,} rows filled)")
+            st.caption(f"**Destination CSV:** `{active_file.name}` ({active_rows:,} / {max_rows_limit:,} rows filled)")
 
     st.write("")
-    start_scrape_btn = st.button("🚀 Scrape Now", type="primary", use_container_width=True)
+    start_scrape_btn = st.button("Start Collection", type="primary", use_container_width=True)
 
     if start_scrape_btn:
         if not target_scrape_countries:
@@ -913,7 +910,7 @@ with tab_scraper:
 
             def on_live_progress(current, total, status_text):
                 progress_bar.progress(min(1.0, current / total))
-                status_container.info(f"🔄 **Live Status:** {status_text}")
+                status_container.info(f"**Live Status:** {status_text}")
 
             delay = 0.012 if scrape_speed == "Realistic Live Network Simulation" else 0.0
 
@@ -932,8 +929,8 @@ with tab_scraper:
             status_container.empty()
 
             st.success(
-                f"🎉 **Live Scraping Complete!** Successfully scraped, validated, and appended "
-                f"**{len(newly_collected):,} new reviews** across **{len(target_scrape_countries)} countries**! "
+                f"**Data Collection Complete.** Appended "
+                f"**{len(newly_collected):,} reviews** across **{len(target_scrape_countries)} countries**. "
                 f"The master dataset in `data/reviews.csv` has been refreshed."
             )
 
@@ -984,23 +981,23 @@ with tab_workflow:
     st.write("")
     col_run1, col_run2 = st.columns([1, 1])
     with col_run1:
-        run_workflow_button = st.button("▶️ Run Full Workflow", type="primary", use_container_width=True)
+        run_workflow_button = st.button("Run Full Workflow", type="primary", use_container_width=True)
     with col_run2:
         st.link_button(
-            "🚀 Run Workflow in GitHub Actions (CI/CD)",
+            "Run Workflow in GitHub Actions (CI/CD)",
             "https://github.com/mightyalok00/apple-review-sentiment-lstm/actions/workflows/ci.yml",
             help="Trigger remote automated GitHub Actions workflow dispatch with full logs & artifacts",
             use_container_width=True,
         )
 
-    st.markdown("##### ⚡ One-Click Preset Runs")
+    st.markdown("##### Preset Workflow Runs")
     col_q1, col_q2, col_q3 = st.columns(3)
     with col_q1:
-        q_btn_data = st.button("📦 Run Data Validation & Parquet", use_container_width=True, help="Validate partitions & consolidate snappy Parquet")
+        q_btn_data = st.button("Run Data Validation & Parquet", use_container_width=True, help="Validate partitions & consolidate snappy Parquet")
     with col_q2:
-        q_btn_test = st.button("🧪 Run Automated Test Suite", use_container_width=True, help="Run 21 automated unit tests via Pytest")
+        q_btn_test = st.button("Run Automated Test Suite", use_container_width=True, help="Run 21 automated unit tests via Pytest")
     with col_q3:
-        q_btn_eval = st.button("🔬 Run Baseline & Evaluation (evaluate_model.py)", use_container_width=True, help="Run academic evaluation suite (evaluate_model.py) with 95% CIs and McNemar tests")
+        q_btn_eval = st.button("Run Baseline & Evaluation (evaluate_model.py)", use_container_width=True, help="Run academic evaluation suite (evaluate_model.py) with 95% CIs and McNemar tests")
 
     should_run = run_workflow_button or q_btn_data or q_btn_test
     if should_run:
@@ -1033,7 +1030,7 @@ with tab_workflow:
 
             def update_wf_ui(stage_key, pct, msg):
                 wf_progress.progress(min(1.0, max(0.0, pct)))
-                wf_status.info(f"🔄 **Pipeline Status:** {msg}")
+                wf_status.info(f"**Pipeline Status:** {msg}")
 
             train_sample_limit = None if wf_sample_option == "Full Dataset" else int(wf_sample_option)
 
@@ -1054,12 +1051,12 @@ with tab_workflow:
 
             if report["overall_status"] == "SUCCESS":
                 st.success(
-                    f"🎉 **Workflow Execution Completed Successfully!** "
+                    f"**Workflow Execution Completed.** "
                     f"Total duration: **{report['total_elapsed_sec']}s** across **{len(report['executed_stages'])} stages**."
                 )
             else:
                 st.warning(
-                    f"⚠️ **Workflow Finished with Warnings/Errors!** "
+                    f"**Workflow Finished with Warnings/Errors.** "
                     f"Total duration: **{report['total_elapsed_sec']}s**."
                 )
 
@@ -1071,7 +1068,7 @@ with tab_workflow:
             res_cols = st.columns(len(report["stage_results"]))
             for idx, (stg_name, stg_data) in enumerate(report["stage_results"].items()):
                 with res_cols[idx]:
-                    st_icon = "✅" if stg_data["status"] == "SUCCESS" else "❌"
+                    st_icon = "[PASS]" if stg_data["status"] == "SUCCESS" else "[FAIL]"
                     st.metric(
                         label=f"{st_icon} {stg_data.get('stage', stg_name)}",
                         value=f"{stg_data['elapsed_sec']}s",
@@ -1079,14 +1076,14 @@ with tab_workflow:
                     )
 
             # Detailed metrics expander
-            with st.expander("🔍 View Raw Pipeline Metrics & Artifacts", expanded=False):
+            with st.expander("Pipeline Metrics & Artifacts", expanded=False):
                 st.json(report)
 
     elif q_btn_eval:
         from evaluate_model import run_comprehensive_evaluation
         with st.spinner("Running academic evaluation suite (evaluate_model.py): 95% CIs, McNemar tests, and 10-bin calibration..."):
             eval_output = run_comprehensive_evaluation(max_eval_samples=3000, seed=42)
-            st.success("🎉 **Academic Model Evaluation & Baseline Benchmark Completed!**")
+            st.success("**Academic Model Evaluation & Baseline Benchmark Completed.**")
             b_comp = eval_output.get("baseline_comparison", {})
             st.markdown("#### Scientific Model Benchmark Comparison (with 95% Bootstrap CIs)")
             bench_rows = []
@@ -1118,7 +1115,7 @@ with tab_workflow:
                 for h in reversed(history_data[-5:]):
                     history_rows.append({
                         "Timestamp": h.get("timestamp", "")[:19].replace("T", " "),
-                        "Overall Status": "✅ SUCCESS" if h.get("overall_status") == "SUCCESS" else "❌ FAILED",
+                        "Overall Status": "SUCCESS" if h.get("overall_status") == "SUCCESS" else "FAILED",
                         "Duration (s)": f"{h.get('total_elapsed_sec', 0)}s",
                         "Stages Executed": ", ".join(h.get("executed_stages", [])),
                     })
@@ -1260,33 +1257,33 @@ with tab_workflow:
 
             col_exp1, col_exp2 = st.columns(2)
             with col_exp1:
-                with st.expander("🌐 Domain Generalization Matrix (Geographic, Platform, Generation)", expanded=False):
+                with st.expander("Domain Generalization Matrix (Geographic, Platform, Generation)", expanded=False):
                     if gen_file.exists():
                         try:
                             g_data = json.loads(gen_file.read_text(encoding="utf-8"))
-                            st.markdown("##### 🌍 Geographic Zero-Shot Transfer")
+                            st.markdown("##### Geographic Zero-Shot Transfer")
                             geo_items = [
                                 {"Region": k, "Samples": v.get("samples", 0), "Accuracy": f"{v.get('accuracy', 0.0)*100:.1f}%"}
                                 for k, v in g_data.get("geographic_generalization", {}).items()
                             ]
                             st.dataframe(pd.DataFrame(geo_items), use_container_width=True)
 
-                            st.markdown("##### 🛒 Cross-Platform Transfer")
+                            st.markdown("##### Cross-Platform Transfer")
                             st.write(f"- **eBay / Flipkart / GSMArena Retention:** `{g_data.get('platform_generalization', {}).get('generalization_retention', 0.0)}%`")
 
-                            st.markdown("##### 📱 Hardware Generation Transfer")
+                            st.markdown("##### Hardware Generation Transfer")
                             st.write(f"- **iPhone 15 & 16 Hardware Paradigms Stability:** `{g_data.get('product_generation_generalization', {}).get('temporal_transfer_stability', 0.0)}%`")
                         except Exception:
                             pass
 
             with col_exp2:
-                with st.expander("⚡ BiLSTM vs DistilBERT Efficiency & Pareto Analysis", expanded=False):
+                with st.expander("BiLSTM vs DistilBERT Efficiency & Pareto Analysis", expanded=False):
                     if trans_file.exists():
                         try:
                             t_data = json.loads(trans_file.read_text(encoding="utf-8"))
                             eff = t_data.get("architectural_efficiency_analysis", {})
                             gains = eff.get("efficiency_gains", {})
-                            st.markdown("##### 🚀 Edge Deployment Pareto Advantages")
+                            st.markdown("##### Edge Deployment Pareto Analysis")
                             st.write(f"- **Parameter Compression:** `{gains.get('parameter_reduction', '468x fewer')}`")
                             st.write(f"- **Storage Footprint:** `{gains.get('storage_reduction', '484x smaller')}`")
                             st.write(f"- **CPU Inference Latency:** `{gains.get('latency_speedup', '29.8x faster')}`")
@@ -1296,7 +1293,7 @@ with tab_workflow:
                         except Exception:
                             pass
 
-            with st.expander("📚 Lexical Diversity & Perplexity Audit (Synthetic vs Authentic)", expanded=False):
+            with st.expander("Lexical Diversity & Perplexity Audit (Synthetic vs Authentic)", expanded=False):
                 if lex_file.exists():
                     try:
                         l_data = json.loads(lex_file.read_text(encoding="utf-8"))
@@ -1322,11 +1319,11 @@ with tab_workflow:
             # Subpopulation Slices & Data Leakage Expander
             slice_file = MODEL_DIR / "sliced_performance.json"
             leak_file = MODEL_DIR / "data_leakage_audit.json"
-            with st.expander("🔬 View Subpopulation Slices & Formal Data Leakage Audit Certificate", expanded=False):
+            with st.expander("Subpopulation Slices & Data Leakage Audit Certificate", expanded=False):
                 if leak_file.exists():
                     try:
                         leak_data = json.loads(leak_file.read_text(encoding="utf-8"))
-                        st.markdown("##### 🛡️ Train-Test Split Independence Certificate")
+                        st.markdown("##### Train-Test Split Independence Certificate")
                         st.markdown(
                             f"- **Audit Status:** `{leak_data.get('audit_verdict', 'VERIFIED_ZERO_LEAKAGE')}`\n"
                             f"- **Exact String Duplicates Between Splits:** `{leak_data.get('exact_duplicates', 0)}`\n"
@@ -1340,7 +1337,7 @@ with tab_workflow:
                 if slice_file.exists():
                     try:
                         slice_data = json.loads(slice_file.read_text(encoding="utf-8"))
-                        st.markdown("##### 📊 Subpopulation Slice Performance Breakdown")
+                        st.markdown("##### Subpopulation Slice Performance Breakdown")
                         col_s1, col_s2 = st.columns(2)
                         with col_s1:
                             st.caption("In-Distribution Test Slices")

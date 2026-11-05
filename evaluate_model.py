@@ -76,7 +76,7 @@ HARD_CHALLENGE_SAMPLES = [
     ("Cannot recommend this phone enough, best camera I have ever used.", 2),
     ("Far from smooth, apps crash constantly when multitasking.", 0),
     ("Not great, but certainly not the worst phone on the market.", 1),
-    ("Never laggy, face unlock works seamlessly in total darkness.", 2),
+    ("Never laggy, face unlock works reliably in total darkness.", 2),
     ("I wouldn't say the screen is bad, but it is definitely dimmer than advertised.", 1),
     ("No complaints whatsoever with battery health after six months.", 2),
 
@@ -336,7 +336,7 @@ def evaluate_baselines(x_train, y_train, x_test, y_test):
     and 5-Fold Stratified Cross-Validation to ensure scientific credibility.
     """
     print("\n" + "=" * 70)
-    print(" 📊 TRAINING CLASSICAL ML BASELINES & 5-FOLD CROSS-VALIDATION")
+    print(" [STAGE] TRAINING CLASSICAL ML BASELINES & 5-FOLD CROSS-VALIDATION")
     print("=" * 70)
 
     tfidf = TfidfVectorizer(ngram_range=(1, 2), max_features=10000, sublinear_tf=True)
@@ -444,12 +444,12 @@ def evaluate_baselines(x_train, y_train, x_test, y_test):
     }
 
     print(
-        f" ✓ Multinomial Naive Bayes: Accuracy ="
+        f" [OK] Multinomial Naive Bayes: Accuracy ="
         f" {baselines['Multinomial Naive Bayes']['accuracy'] * 100:.2f}%"
         f" (5-Fold CV: {nb_mean * 100:.2f}% ± {nb_std * 100:.2f}%)"
     )
     print(
-        " ✓ Logistic Regression:    "
+        " [OK] Logistic Regression:    "
         f" Accuracy = {baselines['Logistic Regression (Balanced)']['accuracy'] * 100:.2f}%"
         f" (5-Fold CV: {lr_mean * 100:.2f}% ± {lr_std * 100:.2f}%)"
     )
@@ -463,7 +463,7 @@ def evaluate_hard_challenge_benchmark(lstm_model, tokenizer, metadata, baselines
     neural advantage of Bidirectional sequence processing over bag-of-words.
     """
     print("\n" + "=" * 70)
-    print(" 🧪 RUNNING HARD CHALLENGE (OOD) BENCHMARK EVALUATION")
+    print(" [STAGE] RUNNING HARD CHALLENGE (OOD) BENCHMARK EVALUATION")
     print("=" * 70)
 
     hard_texts = [item[0] for item in HARD_CHALLENGE_SAMPLES]
@@ -554,7 +554,7 @@ def evaluate_authentic_benchmark(model, tokenizer, metadata, baselines):
     Directly answers auditor findings regarding synthetic template memorization.
     """
     print("\n" + "=" * 70)
-    print(" 🌟 EVALUATING 1,000-SAMPLE AUTHENTIC REAL-WORLD BENCHMARK")
+    print(" [STAGE] EVALUATING 1,000-SAMPLE AUTHENTIC REAL-WORLD BENCHMARK")
     print("=" * 70)
 
     auth_file = ROOT / "data" / "authentic_reviews_eval.json"
@@ -826,7 +826,7 @@ def evaluate_domain_generalization(auth_data, pipe_preds):
         "platform_generalization": plat_results,
         "product_generation_generalization": gen_results,
         "scientific_conclusion": (
-            "The model demonstrates robust out-of-domain transfer with minimal drop across "
+            "The model demonstrates stable out-of-domain transfer with minimal drop across "
             "unseen international geographic markets, cross-platform review ecosystems, and new hardware generations."
         ),
     }
@@ -977,7 +977,7 @@ def run_comprehensive_evaluation(max_eval_samples=5000, seed=42):
 
     # 2. Evaluate Bidirectional LSTM
     print("\n" + "=" * 70)
-    print(" 🧠 EVALUATING BIDIRECTIONAL LSTM NEURAL NETWORK")
+    print(" [STAGE] EVALUATING BIDIRECTIONAL LSTM NEURAL NETWORK")
     print("=" * 70)
 
     if not MODEL_PATH.exists() or not TOKENIZER_PATH.exists() or not METADATA_PATH.exists():
@@ -1239,7 +1239,7 @@ def run_comprehensive_evaluation(max_eval_samples=5000, seed=42):
     print("=" * 108)
 
     # Print statistical significance summary
-    print("\n 🔬 STATISTICAL SIGNIFICANCE (McNemar's Paired Test on 1,000 Authentic Reviews):")
+    print("\n [EVAL] STATISTICAL SIGNIFICANCE (McNemar's Paired Test on 1,000 Authentic Reviews):")
     auth_tests = _get_dict(lstm_report, "statistical_tests")
     nb_test = _get_dict(auth_tests, "authentic_vs_nb_mcnemar")
     lr_test = _get_dict(auth_tests, "authentic_vs_lr_mcnemar")
@@ -1247,7 +1247,7 @@ def run_comprehensive_evaluation(max_eval_samples=5000, seed=42):
     print(f"  • BiLSTM vs Logistic Regression: chi2 = {lr_test.get('chi2_stat', 0.0):.2f}, p = {lr_test.get('p_value', 1.0):.4f} ({'Statistically Significant at p < 0.001' if lr_test.get('p_value', 1.0) < 0.001 else 'Significant'})")
 
     # Print domain generalization summary
-    print("\n 🌐 DOMAIN GENERALIZATION & ZERO-SHOT TRANSFER (Authentic Benchmark):")
+    print("\n [EVAL] DOMAIN GENERALIZATION & ZERO-SHOT TRANSFER (Authentic Benchmark):")
     geo_g = _get_dict(generalization_report, "geographic_generalization")
     plat_g = _get_dict(generalization_report, "platform_generalization")
     gen_g = _get_dict(generalization_report, "product_generation_generalization")
@@ -1259,11 +1259,11 @@ def run_comprehensive_evaluation(max_eval_samples=5000, seed=42):
     # Print lexical diversity summary
     syn_d = _get_dict(lexical_report, "synthetic_training_corpus")
     auth_d = _get_dict(lexical_report, "authentic_benchmark_corpus")
-    print("\n 📚 LEXICAL DIVERSITY & VOCABULARY AUDIT:")
+    print("\n [EVAL] LEXICAL DIVERSITY & VOCABULARY AUDIT:")
     print(f"  • Synthetic Training Corpus: Type-Token Ratio (TTR) = {syn_d.get('type_token_ratio_ttr', 0.0):.4f} | Hapax Ratio = {syn_d.get('hapax_legomena_ratio', 0.0)*100:.1f}% | Entropy = {syn_d.get('shannon_entropy_bits', 0.0):.2f} bits")
     print(f"  • Authentic Benchmark:       Type-Token Ratio (TTR) = {auth_d.get('type_token_ratio_ttr', 0.0):.4f} | Hapax Ratio = {auth_d.get('hapax_legomena_ratio', 0.0)*100:.1f}% | Entropy = {auth_d.get('shannon_entropy_bits', 0.0):.2f} bits")
     print(f"  • Lexical Diversity Multiplier: {lexical_report.get('diversity_multiplier_ttr', 1.0)}x higher vocabulary diversity in authentic evaluation corpus")
-    print(f" 🛡️ DATA LEAKAGE AUDIT: {data_leakage['audit_verdict']} ({data_leakage['exact_duplicates']} duplicate test strings, mean Jaccard = {data_leakage['mean_word_jaccard_overlap']:.4f})")
+    print(f" [AUDIT] DATA LEAKAGE AUDIT: {data_leakage['audit_verdict']} ({data_leakage['exact_duplicates']} duplicate test strings, mean Jaccard = {data_leakage['mean_word_jaccard_overlap']:.4f})")
     print("=" * 108)
 
     # Save artifacts

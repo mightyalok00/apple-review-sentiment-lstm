@@ -307,7 +307,7 @@ def run_full_pipeline(
             progress_callback(key, pct, f"Executing Step {stage_idx}/{total_active_stages}: {name}...")
 
         if verbose:
-            log_step(f"Step {stage_idx}/{total_active_stages}: {name}", icon="🚀")
+            log_step(f"Step {stage_idx}/{total_active_stages}: {name}", icon="[STAGE]")
 
         try:
             if key == "scrape":
@@ -335,7 +335,7 @@ def run_full_pipeline(
 
             results[key] = res
             if verbose:
-                status_icon = "✅" if res["status"] == "SUCCESS" else "❌"
+                status_icon = "[PASS]" if res["status"] == "SUCCESS" else "[FAIL]"
                 print(f"{status_icon} Finished in {res['elapsed_sec']}s: {res['status']}")
 
         except Exception as e:
@@ -346,7 +346,7 @@ def run_full_pipeline(
                 "error": str(e),
             }
             if verbose:
-                print(f"❌ Stage failed with exception: {e}")
+                print(f"[FAIL] Stage failed with exception: {e}")
 
     total_elapsed = round(time.time() - workflow_start, 2)
     overall_status = "SUCCESS" if all(r.get("status") == "SUCCESS" for r in results.values()) else "FAILED"
@@ -403,7 +403,7 @@ def main():
         selected_stages = ["partition", "parquet", "train", "test"]
 
     print("\n" + "=" * 60)
-    print(" 🍎 APPLE REVIEW INTELLIGENCE: PIPELINE WORKFLOW RUNNER")
+    print(" [PIPELINE] APPLE REVIEW INTELLIGENCE: PIPELINE WORKFLOW RUNNER")
     print("=" * 60)
     print(f"Target Stages: {selected_stages or 'ALL (1-5)'}")
     print(f"Timestamp:     {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
@@ -420,10 +420,10 @@ def main():
     )
 
     print("\n" + "=" * 60)
-    print(f" 🏁 WORKFLOW SUMMARY: {report['overall_status']} (Elapsed: {report['total_elapsed_sec']}s)")
+    print(f" [SUMMARY] WORKFLOW SUMMARY: {report['overall_status']} (Elapsed: {report['total_elapsed_sec']}s)")
     print("=" * 60)
     for stg, res in report["stage_results"].items():
-        st_icon = "✅" if res["status"] == "SUCCESS" else "❌"
+        st_icon = "[PASS]" if res["status"] == "SUCCESS" else "[FAIL]"
         print(f" {st_icon} {res.get('stage', stg):<32} : {res['status']:<8} ({res['elapsed_sec']}s)")
     print("=" * 60 + "\n")
 

@@ -1,18 +1,18 @@
-# 🚀 GitHub Actions Workflows
+# GitHub Actions Workflows
 
-[![▶️ Run Pipeline & CI Workflow](https://img.shields.io/badge/▶%EF%B8%8F%20RUN%20WORKFLOW-CLICK%20HERE%20TO%20TRIGGER-2ea44f?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/mightyalok00/apple-review-sentiment-lstm/actions/workflows/ci.yml)
-[![Live Streamlit Dashboard](https://img.shields.io/badge/🌐%20STREAMLIT%20APP-RUN%20IN%20BROWSER-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://apple-review-sentiment-lstm.streamlit.app/)
+[![Run Pipeline & CI Workflow](https://img.shields.io/badge/RUN%20WORKFLOW-TRIGGER-2ea44f?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/mightyalok00/apple-review-sentiment-lstm/actions/workflows/ci.yml)
+[![Live Streamlit Dashboard](https://img.shields.io/badge/STREAMLIT%20APP-BROWSER-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://apple-review-sentiment-lstm.streamlit.app/)
 [![Workflow Status](https://github.com/mightyalok00/apple-review-sentiment-lstm/actions/workflows/ci.yml/badge.svg)](https://github.com/mightyalok00/apple-review-sentiment-lstm/actions/workflows/ci.yml)
 
 ---
 
-## 🔘 How to Run the Workflow (Mobile & Desktop)
+## How to Run the Workflow (Mobile & Desktop)
 
 Click the button above or follow these direct steps to manually execute the end-to-end pipeline on GitHub Actions from either desktop or mobile:
 
-### Option 1: Direct 1-Click Trigger (Mobile Web, GitHub Mobile App & Desktop)
+### Option 1: Direct Trigger (Mobile Web, GitHub Mobile App & Desktop)
 
-👉 **[Launch Pipeline & CI Workflow in GitHub Actions](https://github.com/mightyalok00/apple-review-sentiment-lstm/actions/workflows/ci.yml)**
+**[Launch Pipeline & CI Workflow in GitHub Actions](https://github.com/mightyalok00/apple-review-sentiment-lstm/actions/workflows/ci.yml)**
 
 - **On Desktop**:
   1. Open the [Workflow Page](https://github.com/mightyalok00/apple-review-sentiment-lstm/actions/workflows/ci.yml).
@@ -40,10 +40,10 @@ Click the button above or follow these direct steps to manually execute the end-
 You can also trigger workflow stages interactively from the live application with touch-friendly controls:
 
 1. Open the **[Apple Sentiment Streamlit App](https://apple-review-sentiment-lstm.streamlit.app/)**.
-2. **From Any Screen / Mobile Drawer**: Use the **⚡ Quick Pipeline Launcher** in the header or sidebar.
+2. **From Any Screen / Mobile Drawer**: Use the **Quick Pipeline Launcher** in the header or sidebar.
 3. **From Tab 5 (Pipeline Workflow & Run)**:
    - Configure custom stages and hyperparameters.
-   - Tap **▶️ Run Full Workflow**, **📦 Run Data Validation & Parquet**, **🧪 Run Automated Test Suite**, or **🔬 Run Baseline & Evaluation (`evaluate_model.py`)**.
+   - Tap **Run Full Workflow**, **Run Data Validation & Parquet**, **Run Automated Test Suite**, or **Run Baseline & Evaluation (`evaluate_model.py`)**.
 
 ---
 
@@ -68,7 +68,7 @@ make workflow-run
 
 ---
 
-## 📁 Workflow Configuration Files
+## Workflow Configuration Files
 
 | File | Purpose | Trigger Events |
 | :--- | :--- | :--- |

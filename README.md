@@ -93,8 +93,8 @@ The web dashboard is organized into five functional tabs:
 | **Tab 1** | **Analytics & Visualizations** | Stacked bar charts of sentiment per iPhone series, retail platform donut charts, star rating histograms, and top country activity graphs. |
 | **Tab 2** | **Review Explorer & Export** | Searchable, paginated review records with source partition tracking (`_source_file`), instant CSV download, and high-speed Parquet export. |
 | **Tab 3** | **Live RNN Predictor & ABSA** | Real-time sentence inference with class confidence gauges and dedicated hardware component scorecards. |
-| **Tab 4** | **⚡ Live Scraper (Scrape Now)** | On-demand scraper controls: country selectors (1-130), review volume sliders, platform filters, animated progress bar, and instant cache reload. |
-| **Tab 5** | **🔄 Pipeline Workflow & Run** | Complete pipeline orchestrator: toggle stages, customize training hyperparameters, click **"Run Full Workflow"**, and review telemetry audit logs. |
+| **Tab 4** | **Live Scraper (Scrape Now)** | On-demand scraper controls: country selectors (1-130), review volume sliders, platform filters, progress bar, and instant cache reload. |
+| **Tab 5** | **Pipeline Workflow & Run** | Complete pipeline orchestrator: toggle stages, customize training hyperparameters, click **"Run Full Workflow"**, and review telemetry audit logs. |
 
 ---
 
@@ -482,12 +482,12 @@ make reproduce  # Run 100% deterministic reproduction runner
 
 ## End-to-End Pipeline Workflow
 
-[![Run Workflow in GitHub Actions](https://img.shields.io/badge/▶%EF%B8%8F%20Trigger%20Pipeline-Run%20Workflow%20(GitHub%20Actions)-2ea44f?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/mightyalok00/apple-review-sentiment-lstm/actions/workflows/ci.yml)
+[![Run Workflow in GitHub Actions](https://img.shields.io/badge/Trigger%20Pipeline-Run%20Workflow%20(GitHub%20Actions)-2ea44f?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/mightyalok00/apple-review-sentiment-lstm/actions/workflows/ci.yml)
 
 The pipeline can be triggered through three complementary interfaces:
 
 1. **GitHub Actions Run Button**: Navigate to the [Pipeline & CI Workflow](https://github.com/mightyalok00/apple-review-sentiment-lstm/actions/workflows/ci.yml) page and click the **"Run workflow"** button to trigger automated CI/CD execution with custom inputs (`stages`, `train_epochs`, `max_samples`).
-2. **Streamlit UI Run Buttons (Mobile & Desktop Responsive)**: Tap the persistent top action bar or Tab 5 to execute **"▶️ Run Full Pipeline (CI)"**, **"🔬 Run Model Evaluation (evaluate_model.py)"**, or one-click presets directly inside the browser.
+2. **Streamlit UI Run Buttons (Mobile & Desktop Responsive)**: Use the top action bar or Tab 5 to execute **"Run Full Pipeline (CI)"**, **"Run Model Evaluation (evaluate_model.py)"**, or presets directly inside the browser.
 3. **Headless CLI**: Execute [`workflow.py`](file:///c:/Users/Alok%20Agarwal/OneDrive/Desktop/alokkkk-main/workflow.py) or `make workflow-run`:
 
 ```bash
@@ -538,7 +538,7 @@ pytest -p no:logfire tests/test_pipeline.py -v --cov=predict --cov=scraper --cov
 | `test_shannon_entropy_uncertainty` | Uncertainty Quantification | Confirms Shannon entropy computation in bits, normalized uncertainty index, and confidence verdicts. |
 | `test_negation_inversion_sentiment` | NLP Negation Engine | Verifies multi-word context-aware negation lookback inverts polarity for modified descriptors. |
 | `test_inference_latency_sla` | Latency & Performance | Enforces single-review inference latency SLA under 150ms on CPU. |
-| `test_extreme_and_unicode_inputs` | Edge Case Robustness | Tests system robustness against multi-byte emojis, right-to-left Arabic script, and empty inputs. |
+| `test_extreme_and_unicode_inputs` | Edge Case Handling | Tests system resilience against multi-byte emojis, right-to-left Arabic script, and empty inputs. |
 | `test_dataset_manifest_integrity` | Data Provenance | Validates partition-level SHA-256 fingerprints, row counts, and schema columns against data manifest. |
 | `test_statistical_significance_mcnemar` | Hypothesis Testing | Verifies McNemar paired chi-squared calculations with continuity correction and significance thresholds. |
 | `test_bootstrap_confidence_intervals_and_leakage_audit` | Academic Credibility | Confirms 95% bootstrap confidence interval bounds and certifies train-test data leakage detection. |

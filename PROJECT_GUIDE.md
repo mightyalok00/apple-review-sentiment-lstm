@@ -92,7 +92,7 @@ flowchart LR
 Standard desktop applications like Microsoft Excel struggle when a single CSV exceeds 50,000 rows. The scraper includes a built-in partition manager via [`save_to_csv`](file:///c:/Users/Alok%20Agarwal/OneDrive/Desktop/alokkkk-main/scraper.py#L110-L150):
 
 - **Partition Threshold**: Defaults to 50,000 rows per file (customizable via [config.json](file:///c:/Users/Alok%20Agarwal/OneDrive/Desktop/alokkkk-main/config.json)).
-- **Seamless Rollover**: When `reviews.csv` fills up, the scraper automatically writes to `reviews_part2.csv`, `reviews_part3.csv`, and so on.
+- **Automatic Rollover**: When `reviews.csv` fills up, the scraper automatically writes to `reviews_part2.csv`, `reviews_part3.csv`, and so on.
 - **Unified Loading**: The training and dashboard scripts scan the entire `data/` directory and join all partitions automatically.
 
 ### Accelerated Parquet Database
@@ -364,7 +364,7 @@ The repository includes a comprehensive automated test suite in [test_pipeline.p
 | `test_shannon_entropy_uncertainty` | Uncertainty Quantification | Confirms Shannon entropy computation in bits, normalized uncertainty index, and confidence verdicts. |
 | `test_negation_inversion_sentiment` | NLP Negation Engine | Verifies multi-word context-aware negation lookback inverts polarity for modified descriptors. |
 | `test_inference_latency_sla` | Latency & Performance | Enforces single-review inference latency SLA under 150ms on CPU. |
-| `test_extreme_and_unicode_inputs` | Edge Case Robustness | Tests system robustness against multi-byte emojis, right-to-left Arabic script, and empty inputs. |
+| `test_extreme_and_unicode_inputs` | Edge Case Handling | Tests system resilience against multi-byte emojis, right-to-left Arabic script, and empty inputs. |
 | `test_dataset_manifest_integrity` | Data Provenance | Validates partition-level SHA-256 fingerprints, row counts, and schema columns against data manifest. |
 
 ### Continuous Integration and Manual Workflow Dispatch
@@ -375,7 +375,7 @@ Every git commit or pull request automatically triggers the workflow defined in 
 
 ## 10. Production Containerization, Health Monitoring & Makefile
 
-For seamless enterprise deployment and platform independence, the repository provides multi-stage containerization, live health monitoring, and standardized task automation:
+For containerized deployment and platform independence, the repository provides multi-stage containerization, live health monitoring, and standardized task automation:
 
 ### Multi-Stage Dockerfile & Docker Compose
 

@@ -229,7 +229,7 @@ def train_model(epochs=10, max_samples=None, batch_size=None, verbose=1):
     if verbose:
         print(f"\nVocabulary size: {vocab_size} | Max sequence length: {max_len}")
 
-    # Robust Bidirectional LSTM (RNN) model
+    # Bidirectional LSTM (RNN) model
     model = Sequential([
         Embedding(input_dim=vocab_size, output_dim=128, mask_zero=False),
         SpatialDropout1D(0.25),
