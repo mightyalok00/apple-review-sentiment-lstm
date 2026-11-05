@@ -27,10 +27,12 @@ Thumbs.db
 *.tmp
 *.log
 
-# Project datasets & trained weights (reproducible via workflow)
+# Project datasets & trained weights
 /data/*
 !/data/.gitkeep
 !/data/raw_html/
 !/data/raw_html/.gitkeep
 !/data/model/
 !/data/model/.gitkeep
+!/data/reviews*.csv
+!/data/reviews.parquet
