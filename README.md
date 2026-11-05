@@ -391,20 +391,6 @@ alokkkk-main/
 ├── README.md                    # Quickstart and usage reference
 └── PROJECT_GUIDE.md             # In-depth architectural guide in plain language
 ```
-├── app.py                       # Streamlit analytics dashboard & workflow UI
-├── config.json                  # Review-page URLs, CSS selectors & page constraints
-├── memory.json                  # Run timestamp, unique ID counts & database state
-├── predict.py                   # Neural inference & Aspect-Based Sentiment Analysis
-├── scraper.py                   # Multi-country collector with rotating browser headers
-├── train_model.py               # Balanced-weight Bidirectional LSTM training script
-├── workflow.py                  # Standalone 5-stage pipeline orchestrator
-├── requirements.txt             # Cleaned & grouped project dependencies
-├── pyrefly.toml                 # Static type checking rules
-├── pyrightconfig.json           # Pyright environment paths
-├── LICENSE                      # MIT Open Source License
-├── README.md                    # Quickstart and usage reference
-└── PROJECT_GUIDE.md             # In-depth architectural guide in plain language
-```
 
 ---
 
