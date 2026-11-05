@@ -8,10 +8,16 @@ on:
   workflow_dispatch:
     inputs:
       stages:
-        description: "Pipeline stages to execute (e.g. partition,parquet,test or all)"
-        required: false
+        description: "Pipeline stages to execute"
+        required: true
         default: "partition,parquet,test"
-        type: string
+        type: choice
+        options:
+          - "partition,parquet,test"
+          - "partition,parquet"
+          - "test"
+          - "all"
+          - "train,test"
       train_epochs:
         description: "Training epochs if retraining neural model"
         required: false
