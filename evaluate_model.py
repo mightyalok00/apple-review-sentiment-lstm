@@ -505,14 +505,16 @@ def run_comprehensive_evaluation(max_eval_samples=5000):
     for m_name, m_data in comparison.items():
         lat = f"{lstm_report['inference_latency_ms']}ms" if "LSTM" in m_name else "< 0.5ms"
         cv_str = f"{m_data['cv_accuracy_mean']*100:.1f}±{m_data['cv_accuracy_std']*100:.1f}%" if "cv_accuracy_mean" in m_data else "N/A (Neural)"
-        hard_val = m_data.get("hard_challenge_accuracy")
-        if hard_val is None:
+        hard_raw = m_data.get("hard_challenge_accuracy")
+        if isinstance(hard_raw, (int, float)):
+            hard_val = float(hard_raw)
+        else:
             hard_entry = hard_results.get(m_name)
             if isinstance(hard_entry, dict):
                 hard_val = float(hard_entry.get("accuracy", 0.0))
             else:
                 hard_val = 0.0
-        hard_acc = f"{float(hard_val) * 100:.1f}%"
+        hard_acc = f"{hard_val * 100:.1f}%"
         print(f" {m_name:<30} | {m_data['accuracy'] * 100:>7.2f}% | {cv_str:>14} | {hard_acc:>9} | {m_data['brier_score']:>7.4f} | {lat:>8}")
     print("=" * 86)
 
