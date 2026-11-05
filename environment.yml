@@ -17,3 +17,4 @@ dependencies:
       - plotly>=5.18.0,<7.0.0
       - pytest>=8.0.0,<10.0.0
       - pytest-cov>=4.0.0,<8.0.0
+

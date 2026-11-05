@@ -34,6 +34,7 @@ def check_health():
         return False
 
     # 2. Check mock inference pipeline
+    inference_ms: float = 0.0
     try:
         from predict import predict
         t_infer = time.perf_counter()

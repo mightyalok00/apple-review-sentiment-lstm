@@ -113,7 +113,14 @@ def compute_token_saliency(text, model=None, tokenizer=None, metadata=None):
     perturbation and context-aware lexical polarity, identifying key words that drive prediction.
     """
     if model is None or tokenizer is None or metadata is None:
-        model, tokenizer, metadata = get_inference_resources()
+        loaded_model, loaded_tok, loaded_meta = get_inference_resources()
+        model = model if model is not None else loaded_model
+        tokenizer = tokenizer if tokenizer is not None else loaded_tok
+        metadata = metadata if metadata is not None else loaded_meta
+
+    assert model is not None
+    assert tokenizer is not None
+    assert metadata is not None
 
     words = re.findall(r"\b[\w'-]+\b", text)
     if not words:

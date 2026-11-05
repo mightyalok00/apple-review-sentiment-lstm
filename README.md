@@ -171,14 +171,15 @@ Total params: 141,443 (552.51 KB)
 ### Scientific Baseline Benchmark & Stress-Test Comparison
 
 To establish undeniable scientific credibility, the models were evaluated under two rigorous regimes:
+
 1. **5-Fold Stratified Cross-Validation** on training partitions (mean ± standard deviation).
 2. **Out-of-Distribution (OOD) Hard Challenge Benchmark**: 28 curated linguistic edge cases specifically testing negations ("not bad at all", "never once lagged"), sarcasm ("paperweight that dies before lunch"), and contrasting clauses.
 
 | Model Architecture | In-Dist Acc | 5-Fold Stratified CV | Hard OOD Acc | Hard Macro F1 | Brier Score | Latency |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Multinomial Naive Bayes** (`alpha=0.5`) | 100.00% | 100.0% ± 0.0% | 67.9% | 0.6488 | 0.0000 | < 0.5 ms |
-| **Logistic Regression** (Balanced, L2) | 100.00% | 100.0% ± 0.0% | 78.6% | 0.7820 | 0.0005 | < 0.5 ms |
-| **Bidirectional LSTM** (Neural Pipeline) | **100.00%** | **N/A (Neural)** | **89.3%** | **0.8872** | **0.0000** | 1.18 ms |
+| **Multinomial Naive Bayes** (`alpha=0.5`) | 100.00% | 100.0% ± 0.0% | 60.7% | 0.5740 | 0.0000 | < 0.5 ms |
+| **Logistic Regression** (Balanced, L2) | 100.00% | 100.0% ± 0.0% | 75.0% | 0.7424 | 0.0011 | < 0.5 ms |
+| **Bidirectional LSTM** (Neural Pipeline) | **100.00%** | **N/A (Neural)** | **96.4%** | **0.9666** | **0.0000** | 0.8 ms |
 
 > Run the complete scientific evaluation suite at any time via `python evaluate_model.py`.
 

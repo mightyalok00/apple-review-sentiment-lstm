@@ -10,8 +10,8 @@
   "log_loss": 0.0002,
   "brier_score": 0.0,
   "expected_calibration_error": 0.0002,
-  "test_samples": 600,
-  "inference_latency_ms": 0.94,
+  "test_samples": 1000,
+  "inference_latency_ms": 0.73,
   "hard_challenge_accuracy": 0.9643,
   "hard_challenge_macro_f1": 0.9666,
   "per_class": {
@@ -19,19 +19,19 @@
       "precision": 1.0,
       "recall": 1.0,
       "f1_score": 1.0,
-      "support": 200
+      "support": 333
     },
     "neutral": {
       "precision": 1.0,
       "recall": 1.0,
       "f1_score": 1.0,
-      "support": 200
+      "support": 333
     },
     "positive": {
       "precision": 1.0,
       "recall": 1.0,
       "f1_score": 1.0,
-      "support": 200
+      "support": 334
     }
   }
 }

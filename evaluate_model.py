@@ -17,8 +17,9 @@ import random
 import re
 import sys
 import time
+import statistics
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Tuple, cast
 
 ROOT = Path(__file__).resolve().parent
 os.environ["KERAS_HOME"] = str(ROOT / ".keras")
@@ -167,17 +168,30 @@ def evaluate_baselines(x_train, y_train, x_test, y_test):
 
     # 1. 5-Fold Stratified Cross-Validation
     skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
-    nb_cv_scores = []
-    lr_cv_scores = []
-    for train_idx, val_idx in skf.split(x_train_vec, y_train):
-        cv_xt, cv_xv = x_train_vec[train_idx], x_train_vec[val_idx]
+    nb_cv_scores: list[float] = []
+    lr_cv_scores: list[float] = []
+    train_vec_any = cast(Any, x_train_vec)
+    for train_idx, val_idx in skf.split(train_vec_any, y_train):
+        cv_xt = train_vec_any[train_idx]
+        cv_xv = train_vec_any[val_idx]
         cv_yt, cv_yv = y_train[train_idx], y_train[val_idx]
 
         m_nb = MultinomialNB(alpha=0.5).fit(cv_xt, cv_yt)
-        nb_cv_scores.append(accuracy_score(cv_yv, m_nb.predict(cv_xv)))
+        nb_cv_scores.append(float(accuracy_score(cv_yv, m_nb.predict(cv_xv))))
 
-        m_lr = LogisticRegression(max_iter=1000, class_weight="balanced", random_state=42).fit(cv_xt, cv_yt)
-        lr_cv_scores.append(accuracy_score(cv_yv, m_lr.predict(cv_xv)))
+        m_lr = LogisticRegression(
+            max_iter=1000, class_weight="balanced", random_state=42
+        ).fit(cv_xt, cv_yt)
+        lr_cv_scores.append(float(accuracy_score(cv_yv, m_lr.predict(cv_xv))))
+
+    nb_mean = float(statistics.mean(nb_cv_scores))
+    nb_std = (
+        float(statistics.stdev(nb_cv_scores)) if len(nb_cv_scores) > 1 else 0.0
+    )
+    lr_mean = float(statistics.mean(lr_cv_scores))
+    lr_std = (
+        float(statistics.stdev(lr_cv_scores)) if len(lr_cv_scores) > 1 else 0.0
+    )
 
     # 2. Final Fit and Held-Out Test Evaluation
     t0 = time.time()
@@ -187,54 +201,69 @@ def evaluate_baselines(x_train, y_train, x_test, y_test):
     nb_probs = nb.predict_proba(x_test_vec)
 
     t0 = time.time()
-    lr = LogisticRegression(max_iter=1000, class_weight="balanced", random_state=42).fit(x_train_vec, y_train)
+    lr = LogisticRegression(
+        max_iter=1000, class_weight="balanced", random_state=42
+    ).fit(x_train_vec, y_train)
     lr_time = round(time.time() - t0, 3)
     lr_preds = lr.predict(x_test_vec)
     lr_probs = lr.predict_proba(x_test_vec)
 
     def calc_metrics(preds, probs):
-        acc = accuracy_score(y_test, preds)
-        bal_acc = balanced_accuracy_score(y_test, preds)
-        macro_f1 = f1_score(y_test, preds, average="macro", zero_division=0)
-        weighted_f1 = f1_score(y_test, preds, average="weighted", zero_division=0)
-        try:
-            auc = roc_auc_score(y_test, probs, multi_class="ovr")
-        except Exception:
-            auc = 0.0
-        calib = compute_calibration_metrics(y_test, probs)
-        return {
-            "accuracy": round(float(acc), 4),
-            "balanced_accuracy": round(float(bal_acc), 4),
-            "macro_f1": round(float(macro_f1), 4),
-            "weighted_f1": round(float(weighted_f1), 4),
-            "roc_auc_ovr": round(float(auc), 4),
-            "brier_score": calib["brier_score"],
-            "expected_calibration_error": calib["expected_calibration_error"],
-        }
+      acc = accuracy_score(y_test, preds)
+      bal_acc = balanced_accuracy_score(y_test, preds)
+      macro_f1 = f1_score(y_test, preds, average="macro", zero_division=0)
+      weighted_f1 = f1_score(y_test, preds, average="weighted", zero_division=0)
+      try:
+        auc = roc_auc_score(y_test, probs, multi_class="ovr")
+      except Exception:
+        auc = 0.0
+      calib = compute_calibration_metrics(y_test, probs)
+      return {
+          "accuracy": round(float(acc), 4),
+          "balanced_accuracy": round(float(bal_acc), 4),
+          "macro_f1": round(float(macro_f1), 4),
+          "weighted_f1": round(float(weighted_f1), 4),
+          "roc_auc_ovr": round(float(auc), 4),
+          "brier_score": calib["brier_score"],
+          "expected_calibration_error": calib["expected_calibration_error"],
+      }
 
     baselines = {
         "Multinomial Naive Bayes": {
             **calc_metrics(nb_preds, nb_probs),
-            "cv_accuracy_mean": round(float(np.mean(nb_cv_scores)), 4),
-            "cv_accuracy_std": round(float(np.std(nb_cv_scores)), 4),
+            "cv_accuracy_mean": round(nb_mean, 4),
+            "cv_accuracy_std": round(nb_std, 4),
             "train_time_sec": nb_time,
-            "architecture": "TF-IDF (1-2 ngrams, 10k features) + MultinomialNB(alpha=0.5)",
+            "architecture": (
+                "TF-IDF (1-2 ngrams, 10k features) + MultinomialNB(alpha=0.5)"
+            ),
             "model_obj": nb,
             "vectorizer": tfidf,
         },
         "Logistic Regression (Balanced)": {
             **calc_metrics(lr_preds, lr_probs),
-            "cv_accuracy_mean": round(float(np.mean(lr_cv_scores)), 4),
-            "cv_accuracy_std": round(float(np.std(lr_cv_scores)), 4),
+            "cv_accuracy_mean": round(lr_mean, 4),
+            "cv_accuracy_std": round(lr_std, 4),
             "train_time_sec": lr_time,
-            "architecture": "TF-IDF (1-2 ngrams, 10k features) + LogisticRegression(L2, balanced)",
+            "architecture": (
+                "TF-IDF (1-2 ngrams, 10k features) +"
+                " LogisticRegression(L2, balanced)"
+            ),
             "model_obj": lr,
             "vectorizer": tfidf,
         },
     }
 
-    print(f" ✓ Multinomial Naive Bayes: Accuracy = {baselines['Multinomial Naive Bayes']['accuracy'] * 100:.2f}% (5-Fold CV: {np.mean(nb_cv_scores)*100:.2f}% ± {np.std(nb_cv_scores)*100:.2f}%)")
-    print(f" ✓ Logistic Regression:     Accuracy = {baselines['Logistic Regression (Balanced)']['accuracy'] * 100:.2f}% (5-Fold CV: {np.mean(lr_cv_scores)*100:.2f}% ± {np.std(lr_cv_scores)*100:.2f}%)")
+    print(
+        f" ✓ Multinomial Naive Bayes: Accuracy ="
+        f" {baselines['Multinomial Naive Bayes']['accuracy'] * 100:.2f}%"
+        f" (5-Fold CV: {nb_mean * 100:.2f}% ± {nb_std * 100:.2f}%)"
+    )
+    print(
+        " ✓ Logistic Regression:    "
+        f" Accuracy = {baselines['Logistic Regression (Balanced)']['accuracy'] * 100:.2f}%"
+        f" (5-Fold CV: {lr_mean * 100:.2f}% ± {lr_std * 100:.2f}%)"
+    )
     return baselines
 
 
@@ -371,9 +400,9 @@ def run_comprehensive_evaluation(max_eval_samples=5000):
 
     # Per-class metrics
     per_class = {}
-    p_per = precision_score(y_test, predictions, average=None, zero_division=0)
-    r_per = recall_score(y_test, predictions, average=None, zero_division=0)
-    f_per = f1_score(y_test, predictions, average=None, zero_division=0)
+    p_per = np.asarray(precision_score(y_test, predictions, average=None, zero_division=0))
+    r_per = np.asarray(recall_score(y_test, predictions, average=None, zero_division=0))
+    f_per = np.asarray(f1_score(y_test, predictions, average=None, zero_division=0))
     for idx, name in enumerate(CLASS_NAMES):
         count = int(np.sum(y_test == idx))
         per_class[name] = {
@@ -476,7 +505,14 @@ def run_comprehensive_evaluation(max_eval_samples=5000):
     for m_name, m_data in comparison.items():
         lat = f"{lstm_report['inference_latency_ms']}ms" if "LSTM" in m_name else "< 0.5ms"
         cv_str = f"{m_data['cv_accuracy_mean']*100:.1f}±{m_data['cv_accuracy_std']*100:.1f}%" if "cv_accuracy_mean" in m_data else "N/A (Neural)"
-        hard_acc = f"{m_data.get('hard_challenge_accuracy', hard_results.get(m_name, {}).get('accuracy', 0))*100:.1f}%"
+        hard_val = m_data.get("hard_challenge_accuracy")
+        if hard_val is None:
+            hard_entry = hard_results.get(m_name)
+            if isinstance(hard_entry, dict):
+                hard_val = float(hard_entry.get("accuracy", 0.0))
+            else:
+                hard_val = 0.0
+        hard_acc = f"{float(hard_val) * 100:.1f}%"
         print(f" {m_name:<30} | {m_data['accuracy'] * 100:>7.2f}% | {cv_str:>14} | {hard_acc:>9} | {m_data['brier_score']:>7.4f} | {lat:>8}")
     print("=" * 86)
 

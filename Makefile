@@ -46,3 +46,4 @@ docker-run:
 clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
 	rm -rf .pytest_cache .coverage coverage.xml htmlcov .keras/matplotlib 2>/dev/null || true
+
