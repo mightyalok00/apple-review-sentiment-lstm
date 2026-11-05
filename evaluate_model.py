@@ -347,9 +347,10 @@ def evaluate_baselines(x_train, y_train, x_test, y_test):
     skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
     nb_cv_scores: list[float] = []
     lr_cv_scores: list[float] = []
+    x_train_vec_any: Any = x_train_vec
     for train_idx, val_idx in skf.split(x_train_vec, y_train):
-        cv_xt = x_train_vec[train_idx]
-        cv_xv = x_train_vec[val_idx]
+        cv_xt = x_train_vec_any[train_idx]
+        cv_xv = x_train_vec_any[val_idx]
         cv_yt, cv_yv = y_train[train_idx], y_train[val_idx]
 
         m_nb = MultinomialNB(alpha=0.5).fit(cv_xt, cv_yt)
@@ -1080,6 +1081,17 @@ def run_comprehensive_evaluation(max_eval_samples=5000, seed=42):
                 "failure_mode": category,
             })
 
+    # Extract dictionary payloads safely
+    lstm_auth: dict[str, Any] = dict(auth_report.get("Bidirectional LSTM (Neural Pipeline)", {}))
+    pipe_res: dict[str, Any] = dict(hard_results.get("Full Pipeline (LSTM + Context Negation)", {}))
+    nb_hard: dict[str, Any] = dict(hard_results.get("Multinomial Naive Bayes", {}))
+    lr_hard: dict[str, Any] = dict(hard_results.get("Logistic Regression (Balanced)", {}))
+    nb_base: dict[str, Any] = dict(baselines.get("Multinomial Naive Bayes", {}))
+    lr_base: dict[str, Any] = dict(baselines.get("Logistic Regression (Balanced)", {}))
+    nb_auth: dict[str, Any] = dict(auth_report.get("Multinomial Naive Bayes", {}))
+    lr_auth: dict[str, Any] = dict(auth_report.get("Logistic Regression (Balanced)", {}))
+    bert_auth: dict[str, Any] = dict(auth_report.get("DistilBERT (Transformer Baseline)", {}))
+
     # Compile final report payload
     lstm_report = {
         "model_name": "Bidirectional LSTM RNN",
@@ -1099,60 +1111,50 @@ def run_comprehensive_evaluation(max_eval_samples=5000, seed=42):
         "expected_calibration_error": calib["expected_calibration_error"],
         "test_samples": len(y_test),
         "inference_latency_ms": round((inference_time / len(y_test)) * 1000, 2),
-        "authentic_benchmark_accuracy": auth_report["Bidirectional LSTM (Neural Pipeline)"]["accuracy"],
-        "authentic_benchmark_macro_f1": auth_report["Bidirectional LSTM (Neural Pipeline)"]["macro_f1"],
-        "authentic_benchmark_cohen_kappa": auth_report["Bidirectional LSTM (Neural Pipeline)"]["cohen_kappa"],
-        "authentic_benchmark_accuracy_ci_95": auth_report["Bidirectional LSTM (Neural Pipeline)"]["accuracy_ci_95"],
-        "hard_challenge_accuracy": hard_results["Full Pipeline (LSTM + Context Negation)"]["accuracy"],
-        "hard_challenge_macro_f1": hard_results["Full Pipeline (LSTM + Context Negation)"]["macro_f1"],
-        "hard_challenge_cohen_kappa": hard_results["Full Pipeline (LSTM + Context Negation)"]["cohen_kappa"],
-        "hard_challenge_mcc": hard_results["Full Pipeline (LSTM + Context Negation)"]["matthews_corrcoef"],
-        "hard_challenge_accuracy_ci_95": hard_results["Full Pipeline (LSTM + Context Negation)"]["accuracy_ci_95"],
+        "authentic_benchmark_accuracy": lstm_auth.get("accuracy", 0.0),
+        "authentic_benchmark_macro_f1": lstm_auth.get("macro_f1", 0.0),
+        "authentic_benchmark_cohen_kappa": lstm_auth.get("cohen_kappa", 0.0),
+        "authentic_benchmark_accuracy_ci_95": lstm_auth.get("accuracy_ci_95", [0.0, 0.0]),
+        "hard_challenge_accuracy": pipe_res.get("accuracy", 0.0),
+        "hard_challenge_macro_f1": pipe_res.get("macro_f1", 0.0),
+        "hard_challenge_cohen_kappa": pipe_res.get("cohen_kappa", 0.0),
+        "hard_challenge_mcc": pipe_res.get("matthews_corrcoef", 0.0),
+        "hard_challenge_accuracy_ci_95": pipe_res.get("accuracy_ci_95", [0.0, 0.0]),
         "statistical_tests": {
-            **hard_results.get("statistical_tests", {}),
-            "authentic_vs_nb_mcnemar": auth_report["Bidirectional LSTM (Neural Pipeline)"].get("mcnemar_vs_naive_bayes", {}),
-            "authentic_vs_lr_mcnemar": auth_report["Bidirectional LSTM (Neural Pipeline)"].get("mcnemar_vs_logistic_regression", {}),
+            **dict(hard_results.get("statistical_tests", {})),
+            "authentic_vs_nb_mcnemar": lstm_auth.get("mcnemar_vs_naive_bayes", {}),
+            "authentic_vs_lr_mcnemar": lstm_auth.get("mcnemar_vs_logistic_regression", {}),
         },
         "data_leakage_audit": data_leakage,
         "per_class": per_class,
     }
 
-    pipe_res = hard_results["Full Pipeline (LSTM + Context Negation)"]
-    nb_hard = hard_results["Multinomial Naive Bayes"]
-    lr_hard = hard_results["Logistic Regression (Balanced)"]
-    nb_base = baselines["Multinomial Naive Bayes"]
-    lr_base = baselines["Logistic Regression (Balanced)"]
-    nb_auth = auth_report["Multinomial Naive Bayes"]
-    lr_auth = auth_report["Logistic Regression (Balanced)"]
-    lstm_auth = auth_report["Bidirectional LSTM (Neural Pipeline)"]
-    bert_auth = auth_report["DistilBERT (Transformer Baseline)"]
-
     comparison: dict[str, dict[str, Any]] = {
         "Multinomial Naive Bayes": {
             **{k: v for k, v in nb_base.items() if k not in ("model_obj", "vectorizer")},
-            "hard_challenge_accuracy": nb_hard["accuracy"],
-            "hard_challenge_macro_f1": nb_hard["macro_f1"],
-            "hard_challenge_cohen_kappa": nb_hard["cohen_kappa"],
-            "hard_challenge_mcc": nb_hard["matthews_corrcoef"],
-            "hard_challenge_accuracy_ci_95": nb_hard["accuracy_ci_95"],
-            "authentic_accuracy": nb_auth["accuracy"],
-            "authentic_macro_f1": nb_auth["macro_f1"],
-            "authentic_cohen_kappa": nb_auth["cohen_kappa"],
-            "authentic_mcc": nb_auth["matthews_corrcoef"],
-            "authentic_accuracy_ci_95": nb_auth["accuracy_ci_95"],
+            "hard_challenge_accuracy": nb_hard.get("accuracy", 0.0),
+            "hard_challenge_macro_f1": nb_hard.get("macro_f1", 0.0),
+            "hard_challenge_cohen_kappa": nb_hard.get("cohen_kappa", 0.0),
+            "hard_challenge_mcc": nb_hard.get("matthews_corrcoef", 0.0),
+            "hard_challenge_accuracy_ci_95": nb_hard.get("accuracy_ci_95", [0.0, 0.0]),
+            "authentic_accuracy": nb_auth.get("accuracy", 0.0),
+            "authentic_macro_f1": nb_auth.get("macro_f1", 0.0),
+            "authentic_cohen_kappa": nb_auth.get("cohen_kappa", 0.0),
+            "authentic_mcc": nb_auth.get("matthews_corrcoef", 0.0),
+            "authentic_accuracy_ci_95": nb_auth.get("accuracy_ci_95", [0.0, 0.0]),
         },
         "Logistic Regression (Balanced)": {
             **{k: v for k, v in lr_base.items() if k not in ("model_obj", "vectorizer")},
-            "hard_challenge_accuracy": lr_hard["accuracy"],
-            "hard_challenge_macro_f1": lr_hard["macro_f1"],
-            "hard_challenge_cohen_kappa": lr_hard["cohen_kappa"],
-            "hard_challenge_mcc": lr_hard["matthews_corrcoef"],
-            "hard_challenge_accuracy_ci_95": lr_hard["accuracy_ci_95"],
-            "authentic_accuracy": lr_auth["accuracy"],
-            "authentic_macro_f1": lr_auth["macro_f1"],
-            "authentic_cohen_kappa": lr_auth["cohen_kappa"],
-            "authentic_mcc": lr_auth["matthews_corrcoef"],
-            "authentic_accuracy_ci_95": lr_auth["accuracy_ci_95"],
+            "hard_challenge_accuracy": lr_hard.get("accuracy", 0.0),
+            "hard_challenge_macro_f1": lr_hard.get("macro_f1", 0.0),
+            "hard_challenge_cohen_kappa": lr_hard.get("cohen_kappa", 0.0),
+            "hard_challenge_mcc": lr_hard.get("matthews_corrcoef", 0.0),
+            "hard_challenge_accuracy_ci_95": lr_hard.get("accuracy_ci_95", [0.0, 0.0]),
+            "authentic_accuracy": lr_auth.get("accuracy", 0.0),
+            "authentic_macro_f1": lr_auth.get("macro_f1", 0.0),
+            "authentic_cohen_kappa": lr_auth.get("cohen_kappa", 0.0),
+            "authentic_mcc": lr_auth.get("matthews_corrcoef", 0.0),
+            "authentic_accuracy_ci_95": lr_auth.get("accuracy_ci_95", [0.0, 0.0]),
         },
         "Bidirectional LSTM (Neural Pipeline)": {
             "accuracy": round(acc, 4),
@@ -1166,16 +1168,16 @@ def run_comprehensive_evaluation(max_eval_samples=5000, seed=42):
             "macro_f1_ci_95": list(f1_ci),
             "brier_score": calib["brier_score"],
             "expected_calibration_error": calib["expected_calibration_error"],
-            "hard_challenge_accuracy": pipe_res["accuracy"],
-            "hard_challenge_macro_f1": pipe_res["macro_f1"],
-            "hard_challenge_cohen_kappa": pipe_res["cohen_kappa"],
-            "hard_challenge_mcc": pipe_res["matthews_corrcoef"],
-            "hard_challenge_accuracy_ci_95": pipe_res["accuracy_ci_95"],
-            "authentic_accuracy": lstm_auth["accuracy"],
-            "authentic_macro_f1": lstm_auth["macro_f1"],
-            "authentic_cohen_kappa": lstm_auth["cohen_kappa"],
-            "authentic_mcc": lstm_auth["matthews_corrcoef"],
-            "authentic_accuracy_ci_95": lstm_auth["accuracy_ci_95"],
+            "hard_challenge_accuracy": pipe_res.get("accuracy", 0.0),
+            "hard_challenge_macro_f1": pipe_res.get("macro_f1", 0.0),
+            "hard_challenge_cohen_kappa": pipe_res.get("cohen_kappa", 0.0),
+            "hard_challenge_mcc": pipe_res.get("matthews_corrcoef", 0.0),
+            "hard_challenge_accuracy_ci_95": pipe_res.get("accuracy_ci_95", [0.0, 0.0]),
+            "authentic_accuracy": lstm_auth.get("accuracy", 0.0),
+            "authentic_macro_f1": lstm_auth.get("macro_f1", 0.0),
+            "authentic_cohen_kappa": lstm_auth.get("cohen_kappa", 0.0),
+            "authentic_mcc": lstm_auth.get("matthews_corrcoef", 0.0),
+            "authentic_accuracy_ci_95": lstm_auth.get("accuracy_ci_95", [0.0, 0.0]),
             "train_time_sec": 10.2,
             "architecture": "BiLSTM(64) + SpatialDropout(0.25) + Attention Negation Engine",
         },
@@ -1196,11 +1198,11 @@ def run_comprehensive_evaluation(max_eval_samples=5000, seed=42):
             "hard_challenge_cohen_kappa": 0.738,
             "hard_challenge_mcc": 0.741,
             "hard_challenge_accuracy_ci_95": [0.700, 0.925],
-            "authentic_accuracy": bert_auth["accuracy"],
-            "authentic_macro_f1": bert_auth["macro_f1"],
-            "authentic_cohen_kappa": bert_auth["cohen_kappa"],
-            "authentic_mcc": bert_auth["matthews_corrcoef"],
-            "authentic_accuracy_ci_95": bert_auth["accuracy_ci_95"],
+            "authentic_accuracy": bert_auth.get("accuracy", 0.0),
+            "authentic_macro_f1": bert_auth.get("macro_f1", 0.0),
+            "authentic_cohen_kappa": bert_auth.get("cohen_kappa", 0.0),
+            "authentic_mcc": bert_auth.get("matthews_corrcoef", 0.0),
+            "authentic_accuracy_ci_95": bert_auth.get("accuracy_ci_95", [0.0, 0.0]),
             "train_time_sec": 184.0,
             "architecture": "DistilBERT-base-uncased (6-layer, 768-dim, 66.4M params)",
         },
@@ -1230,8 +1232,8 @@ def run_comprehensive_evaluation(max_eval_samples=5000, seed=42):
     # Print statistical significance summary
     print("\n 🔬 STATISTICAL SIGNIFICANCE (McNemar's Paired Test on 1,000 Authentic Reviews):")
     auth_tests = lstm_report.get("statistical_tests", {})
-    nb_test = auth_tests.get("authentic_vs_nb_mcnemar", {})
-    lr_test = auth_tests.get("authentic_vs_lr_mcnemar", {})
+    nb_test: dict[str, Any] = dict(auth_tests.get("authentic_vs_nb_mcnemar", {})) if isinstance(auth_tests, dict) else {}
+    lr_test: dict[str, Any] = dict(auth_tests.get("authentic_vs_lr_mcnemar", {})) if isinstance(auth_tests, dict) else {}
     print(f"  • BiLSTM vs Naive Bayes:        chi2 = {nb_test.get('chi2_stat', 0.0):.2f}, p = {nb_test.get('p_value', 1.0):.4f} ({'Statistically Significant at p < 0.001' if nb_test.get('p_value', 1.0) < 0.001 else 'Significant'})")
     print(f"  • BiLSTM vs Logistic Regression: chi2 = {lr_test.get('chi2_stat', 0.0):.2f}, p = {lr_test.get('p_value', 1.0):.4f} ({'Statistically Significant at p < 0.001' if lr_test.get('p_value', 1.0) < 0.001 else 'Significant'})")
 

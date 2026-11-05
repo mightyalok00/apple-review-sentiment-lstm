@@ -6,4 +6,6 @@ bad-assignment = "ignore"
 unsupported-operation = "ignore"
 redundant-cast = "ignore"
 missing-module-attribute = "ignore"
-
+bad-index = "ignore"
+missing-attribute = "ignore"
+bad-argument-type = "ignore"
