@@ -1,5 +1,9 @@
 # Apple Review RNN
 
+[![Pipeline & CI Workflow](https://github.com/mightyalok00/apple-review-sentiment-lstm/actions/workflows/ci.yml/badge.svg)](https://github.com/mightyalok00/apple-review-sentiment-lstm/actions/workflows/ci.yml)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 A Python project template for collecting publicly accessible Apple-product reviews from pages you are permitted to scrape (without an API), then training an LSTM sentiment classifier. An LSTM is a type of recurrent neural network (RNN).
 
 > **This is a configurable starter, not a preconfigured scraper for Amazon or another retailer.** Sites use different page structures and rules. Configure `config.json` for a source that permits automated access. The project does not bypass logins, CAPTCHAs, paywalls, robots rules, or anti-bot controls. Do not use it on a site unless its terms and applicable law allow it.
