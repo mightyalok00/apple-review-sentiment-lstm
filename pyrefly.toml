@@ -1,0 +1,5 @@
+[errors]
+untyped-import = "ignore"
+implicit-import = "ignore"
+unnecessary-type-conversion = "ignore"
+

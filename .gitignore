@@ -1,0 +1,36 @@
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+.env
+
+# Testing & linting caches
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Deep learning & framework caches
+.keras/
+
+# OS & editor metadata
+.DS_Store
+Thumbs.db
+*.tmp
+*.log
+
+# Project datasets & trained weights (reproducible via workflow)
+/data/*
+!/data/.gitkeep
+!/data/raw_html/
+!/data/raw_html/.gitkeep
+!/data/model/
+!/data/model/.gitkeep

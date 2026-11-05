@@ -1,0 +1,108 @@
+{
+  "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+  "request_delay_seconds": 2.0,
+  "max_pages_per_product": 25,
+  "max_reviews_per_product": 500,
+  "max_rows_per_csv": 50000,
+  "respect_robots": false,
+  "products": [
+    {
+      "name": "iPhone 16 Pro Max",
+      "website": "bestbuy.com",
+      "country": "US",
+      "start_url": "https://www.bestbuy.com/site/apple-iphone-16-pro-max-256gb-black-titanium/6580001.p",
+      "selectors": {
+        "review_card": "li.review-item, div.c-review-average",
+        "title": "h4.c-section-title",
+        "text": "p.pre-white-space",
+        "rating": "div.c-ratings-reviews p.visually-hidden, span.c-review-average",
+        "date": "time",
+        "next_page": "li.next-page a"
+      }
+    },
+    {
+      "name": "iPhone 16 Pro",
+      "website": "amazon.com",
+      "country": "US",
+      "start_url": "https://www.amazon.com/dp/B0DGJ9XZ5N/reviews",
+      "selectors": {
+        "review_card": "div[data-hook='review']",
+        "title": "a[data-hook='review-title'] span",
+        "text": "span[data-hook='review-body'] span",
+        "rating": "i[data-hook='review-star-rating'] span",
+        "date": "span[data-hook='review-date']",
+        "next_page": "li.a-last a"
+      }
+    },
+    {
+      "name": "iPhone 16",
+      "website": "flipkart.com",
+      "country": "IN",
+      "start_url": "https://www.flipkart.com/apple-iphone-16-ultramarine-128-gb/product-reviews/itme352496a7d559",
+      "selectors": {
+        "review_card": "div._1AtVbE div._2w_U27, div._27M-vq",
+        "title": "p._2-N8zT",
+        "text": "div.t-ZTKy div div",
+        "rating": "div._3LWZlK",
+        "date": "p._2sc7ZR",
+        "next_page": "a._1LKTO3:has(span:contains('Next'))"
+      }
+    },
+    {
+      "name": "iPhone 15 Pro Max",
+      "website": "gsmarena.com",
+      "country": "GB",
+      "start_url": "https://www.gsmarena.com/apple_iphone_15_pro_max-reviews-12548.php",
+      "selectors": {
+        "review_card": "div.user-thread",
+        "title": "",
+        "text": "p.uopin",
+        "rating": "span.score, span.star-rating",
+        "date": "li.upost time",
+        "next_page": "a.pages-next"
+      }
+    },
+    {
+      "name": "iPhone 15",
+      "website": "ebay.com",
+      "country": "DE",
+      "start_url": "https://www.ebay.com/urw/Apple-iPhone-15-128GB/product-reviews/123456",
+      "selectors": {
+        "review_card": "div.ebay-review-section",
+        "title": "h3.review-item-title",
+        "text": "p.review-item-content",
+        "rating": "div.star-rating",
+        "date": "span.review-item-date",
+        "next_page": "a.pagination__next"
+      }
+    },
+    {
+      "name": "iPhone 14 Pro Max",
+      "website": "amazon.com",
+      "country": "CA",
+      "start_url": "https://www.amazon.ca/dp/B0BDJ6P9G5/reviews",
+      "selectors": {
+        "review_card": "div[data-hook='review']",
+        "title": "a[data-hook='review-title'] span",
+        "text": "span[data-hook='review-body'] span",
+        "rating": "i[data-hook='review-star-rating'] span",
+        "date": "span[data-hook='review-date']",
+        "next_page": "li.a-last a"
+      }
+    },
+    {
+      "name": "iPhone 14",
+      "website": "flipkart.com",
+      "country": "IN",
+      "start_url": "https://www.flipkart.com/apple-iphone-14-midnight-128-gb/product-reviews/itm9e6293c322212",
+      "selectors": {
+        "review_card": "div._1AtVbE div._2w_U27, div._27M-vq",
+        "title": "p._2-N8zT",
+        "text": "div.t-ZTKy div div",
+        "rating": "div._3LWZlK",
+        "date": "p._2sc7ZR",
+        "next_page": "a._1LKTO3:has(span:contains('Next'))"
+      }
+    }
+  ]
+}

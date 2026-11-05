@@ -1,0 +1,10 @@
+{
+  "venvPath": ".",
+  "venv": ".venv",
+  "extraPaths": [
+    "."
+  ],
+  "reportMissingTypeStubs": false,
+  "reportImplicitImport": false,
+  "reportUnnecessaryTypeCasting": false
+}
