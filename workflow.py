@@ -363,6 +363,7 @@ def run_full_pipeline(
 
 def main():
     parser = argparse.ArgumentParser(description="Apple Review Intelligence End-to-End Pipeline Workflow")
+    parser.add_argument("--run", action="store_true", help="Explicit run flag for automated workflow trigger")
     parser.add_argument("--all", action="store_true", help="Run all 5 pipeline stages")
     parser.add_argument("--stages", type=str, default="", help="Comma-separated stages: scrape,partition,parquet,train,test")
     parser.add_argument("--countries", type=int, default=5, help="Number of countries to scrape in Stage 1")

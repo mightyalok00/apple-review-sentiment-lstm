@@ -2,6 +2,7 @@
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://apple-review-sentiment-lstm.streamlit.app/)
 [![Pipeline & CI Workflow](https://github.com/mightyalok00/apple-review-sentiment-lstm/actions/workflows/ci.yml/badge.svg)](https://github.com/mightyalok00/apple-review-sentiment-lstm/actions/workflows/ci.yml)
+[![Run Workflow](https://img.shields.io/badge/▶%EF%B8%8F%20Run%20Workflow-GitHub%20Actions-2ea44f.svg)](https://github.com/mightyalok00/apple-review-sentiment-lstm/actions/workflows/ci.yml)
 [![Tests](https://img.shields.io/badge/pytest-18%20passed-brightgreen.svg)](tests/)
 [![Coverage](https://img.shields.io/badge/coverage-100%25%20tests-brightgreen.svg)](tests/)
 [![Docker](https://img.shields.io/badge/Docker-Production%20Ready-2496ED.svg)](Dockerfile)
@@ -367,7 +368,13 @@ make reproduce  # Run 100% deterministic reproduction runner
 
 ## End-to-End Pipeline Workflow
 
-The standalone pipeline manager [`workflow.py`](file:///c:/Users/Alok%20Agarwal/OneDrive/Desktop/alokkkk-main/workflow.py) coordinates all five stages headlessly:
+[![Run Workflow in GitHub Actions](https://img.shields.io/badge/▶%EF%B8%8F%20Trigger%20Pipeline-Run%20Workflow%20(GitHub%20Actions)-2ea44f?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/mightyalok00/apple-review-sentiment-lstm/actions/workflows/ci.yml)
+
+The pipeline can be triggered through three complementary interfaces:
+
+1. **GitHub Actions Run Button**: Navigate to the [Pipeline & CI Workflow](https://github.com/mightyalok00/apple-review-sentiment-lstm/actions/workflows/ci.yml) page and click the **"Run workflow"** button to trigger automated CI/CD execution with custom inputs (`stages`, `train_epochs`, `max_samples`).
+2. **Streamlit UI Run Buttons (Tab 5)**: Click **"▶️ Run Full Workflow"**, or one-click preset buttons (**Run Data Validation & Parquet**, **Run Automated Test Suite**, **Run Baseline & Evaluation**) directly inside the interactive dashboard.
+3. **Headless CLI**: Execute [`workflow.py`](file:///c:/Users/Alok%20Agarwal/OneDrive/Desktop/alokkkk-main/workflow.py) or `make workflow-run`:
 
 ```bash
 # Run all 5 pipeline stages sequentially
@@ -378,6 +385,9 @@ python workflow.py --stages partition,parquet,test
 
 # Run live scraping and fast model retraining with custom hyperparameters
 python workflow.py --stages scrape,train --countries 5 --reviews 20 --epochs 2 --max-samples 3000
+
+# Using Makefile
+make workflow-run
 ```
 
 ---
@@ -387,7 +397,7 @@ python workflow.py --stages scrape,train --countries 5 --reviews 20 --epochs 2 -
 The repository contains 18 automated unit tests verifying data integrity, baseline benchmarks, error resilience, neural inference, explainable AI, uncertainty quantification, latency SLA, and storage handling:
 
 ```bash
-pytest -p no:logfire tests/test_pipeline.py -v --cov=.
+pytest -p no:logfire tests/test_pipeline.py -v --cov=predict --cov=scraper --cov=workflow --cov=evaluate_model
 ```
 
 | Test Function | Target Component | Verification Objective |

@@ -1,4 +1,4 @@
-.PHONY: help install test eval reproduce run docker-build docker-run health clean
+.PHONY: help install test eval reproduce run workflow workflow-run docker-build docker-run health clean
 
 PYTHON ?= python
 PIP ?= pip
@@ -12,6 +12,8 @@ help:
 	@echo "  make test          Execute automated 18-test pytest suite with coverage"
 	@echo "  make eval          Run baseline benchmarking, 5-fold CV & OOD stress-testing"
 	@echo "  make reproduce     Execute 100% deterministic end-to-end reproduction runner"
+	@echo "  make workflow      Run all 5 workflow pipeline stages"
+	@echo "  make workflow-run  Run fast data partition, parquet sync, and test workflow"
 	@echo "  make run           Launch Streamlit analytics dashboard locally"
 	@echo "  make health        Run production container healthcheck"
 	@echo "  make docker-build  Build production Docker image"
@@ -23,13 +25,19 @@ install:
 	$(PIP) install -r requirements.txt
 
 test:
-	$(PYTEST) -p no:logfire tests/test_pipeline.py -v --cov=. --cov-report=term
+	$(PYTEST) -p no:logfire tests/test_pipeline.py -v --cov=predict --cov=scraper --cov=workflow --cov=evaluate_model --cov-report=term
 
 eval:
 	$(PYTHON) evaluate_model.py
 
 reproduce:
 	$(PYTHON) reproduce.py
+
+workflow:
+	$(PYTHON) workflow.py --all
+
+workflow-run:
+	$(PYTHON) workflow.py --stages partition,parquet,test
 
 run:
 	$(STREAMLIT) run app.py

@@ -863,20 +863,44 @@ with tab_workflow:
         wf_max_rows = st.number_input("CSV Partition Row Limit", min_value=5000, max_value=100000, value=50000, step=5000)
 
     st.write("")
-    run_workflow_button = st.button("▶️ Run Full Workflow", type="primary", use_container_width=True)
+    col_run1, col_run2 = st.columns([1, 1])
+    with col_run1:
+        run_workflow_button = st.button("▶️ Run Full Workflow", type="primary", use_container_width=True)
+    with col_run2:
+        st.link_button(
+            "🚀 Run Workflow in GitHub Actions (CI/CD)",
+            "https://github.com/mightyalok00/apple-review-sentiment-lstm/actions/workflows/ci.yml",
+            help="Trigger remote automated GitHub Actions workflow dispatch with full logs & artifacts",
+            use_container_width=True,
+        )
 
-    if run_workflow_button:
+    st.markdown("##### ⚡ One-Click Preset Runs")
+    col_q1, col_q2, col_q3 = st.columns(3)
+    with col_q1:
+        q_btn_data = st.button("📦 Run Data Validation & Parquet", use_container_width=True, help="Validate partitions & consolidate snappy Parquet")
+    with col_q2:
+        q_btn_test = st.button("🧪 Run Automated Test Suite", use_container_width=True, help="Run 18 automated unit tests via Pytest")
+    with col_q3:
+        q_btn_eval = st.button("📊 Run Baseline & Evaluation", use_container_width=True, help="Run Naive Bayes, Logistic Regression & OOD hard challenge benchmarks")
+
+    should_run = run_workflow_button or q_btn_data or q_btn_test
+    if should_run:
         active_stages = []
-        if wf_inc_scrape:
-            active_stages.append("scrape")
-        if wf_inc_partition:
-            active_stages.append("partition")
-        if wf_inc_parquet:
-            active_stages.append("parquet")
-        if wf_inc_train:
-            active_stages.append("train")
-        if wf_inc_test:
-            active_stages.append("test")
+        if q_btn_data:
+            active_stages = ["partition", "parquet"]
+        elif q_btn_test:
+            active_stages = ["test"]
+        else:
+            if wf_inc_scrape:
+                active_stages.append("scrape")
+            if wf_inc_partition:
+                active_stages.append("partition")
+            if wf_inc_parquet:
+                active_stages.append("parquet")
+            if wf_inc_train:
+                active_stages.append("train")
+            if wf_inc_test:
+                active_stages.append("test")
 
         if not active_stages:
             st.error("Please select at least one workflow stage to run.")
@@ -936,6 +960,25 @@ with tab_workflow:
             # Detailed metrics expander
             with st.expander("🔍 View Raw Pipeline Metrics & Artifacts", expanded=False):
                 st.json(report)
+
+    elif q_btn_eval:
+        from evaluate_model import run_comprehensive_evaluation
+        with st.spinner("Running 5-fold cross-validation, baseline benchmarking, and hard OOD stress-tests..."):
+            eval_output = run_comprehensive_evaluation(max_eval_samples=3000)
+            st.success("🎉 **Model Evaluation & Baseline Benchmark Completed!**")
+            b_comp = eval_output.get("baseline_comparison", {})
+            st.markdown("#### Scientific Model Benchmark Comparison")
+            bench_rows = []
+            for m_name, m_data in b_comp.items():
+                bench_rows.append({
+                    "Model": m_name,
+                    "Test Accuracy": f"{float(m_data.get('accuracy', 0.0)) * 100:.1f}%",
+                    "5-Fold CV Accuracy": f"{float(m_data.get('cv_accuracy_mean', 0.0)) * 100:.1f}% ± {float(m_data.get('cv_accuracy_std', 0.0)) * 100:.1f}%" if "cv_accuracy_mean" in m_data else "N/A (Neural)",
+                    "Hard Challenge (OOD)": f"{float(m_data.get('hard_challenge_accuracy', 0.0)) * 100:.1f}%",
+                    "Brier Score": f"{float(m_data.get('brier_score', 0.0)):.4f}",
+                    "Architecture": m_data.get("architecture", ""),
+                })
+            st.dataframe(pd.DataFrame(bench_rows), use_container_width=True)
 
     # Show recent workflow history
     history_file = DATA_DIR / "workflow_history.json"
