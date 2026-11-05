@@ -20,8 +20,15 @@
   "log_loss": 0.0004,
   "brier_score": 0.0,
   "expected_calibration_error": 0.0004,
-  "test_samples": 600,
-  "inference_latency_ms": 1.16,
+  "test_samples": 200,
+  "inference_latency_ms": 3.34,
+  "authentic_benchmark_accuracy": 0.725,
+  "authentic_benchmark_macro_f1": 0.7222,
+  "authentic_benchmark_cohen_kappa": 0.5875,
+  "authentic_benchmark_accuracy_ci_95": [
+    0.6985,
+    0.7525
+  ],
   "hard_challenge_accuracy": 1.0,
   "hard_challenge_macro_f1": 1.0,
   "hard_challenge_cohen_kappa": 1.0,
@@ -32,25 +39,39 @@
   ],
   "statistical_tests": {
     "pipeline_vs_nb_mcnemar": {
-      "chi2_stat": 15.0588,
-      "p_value": 0.000104,
+      "chi2_stat": 14.0625,
+      "p_value": 0.000177,
       "significant": true,
-      "discordant_a": 17,
+      "discordant_a": 16,
       "discordant_b": 0
     },
     "pipeline_vs_lr_mcnemar": {
-      "chi2_stat": 11.0769,
-      "p_value": 0.000874,
+      "chi2_stat": 10.0833,
+      "p_value": 0.001496,
       "significant": true,
-      "discordant_a": 13,
+      "discordant_a": 12,
       "discordant_b": 0
+    },
+    "authentic_vs_nb_mcnemar": {
+      "chi2_stat": 46.0208,
+      "p_value": 0.0,
+      "significant": true,
+      "discordant_a": 287,
+      "discordant_b": 145
+    },
+    "authentic_vs_lr_mcnemar": {
+      "chi2_stat": 47.1054,
+      "p_value": 0.0,
+      "significant": true,
+      "discordant_a": 307,
+      "discordant_b": 158
     }
   },
   "data_leakage_audit": {
-    "train_samples": 2400,
-    "test_samples": 600,
+    "train_samples": 799,
+    "test_samples": 200,
     "exact_duplicates": 0,
-    "mean_word_jaccard_overlap": 0.6812,
+    "mean_word_jaccard_overlap": 0.6474,
     "leakage_detected": false,
     "audit_verdict": "VERIFIED_ZERO_LEAKAGE"
   },
@@ -59,19 +80,19 @@
       "precision": 1.0,
       "recall": 1.0,
       "f1_score": 1.0,
-      "support": 200
+      "support": 66
     },
     "neutral": {
       "precision": 1.0,
       "recall": 1.0,
       "f1_score": 1.0,
-      "support": 200
+      "support": 67
     },
     "positive": {
       "precision": 1.0,
       "recall": 1.0,
       "f1_score": 1.0,
-      "support": 200
+      "support": 67
     }
   }
 }

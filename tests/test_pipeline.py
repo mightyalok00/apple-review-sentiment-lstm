@@ -426,6 +426,65 @@ def test_subgroup_slices_and_calibration():
     assert "empirical_accuracy" in calib_pts[0]
 
 
+def test_authentic_benchmark_dataset_integrity():
+    """Verify authentic benchmark dataset exists with 1,000 samples and valid schemas."""
+    import json
+    auth_file = ROOT / "data" / "authentic_reviews_eval.json"
+    assert auth_file.exists(), "authentic_reviews_eval.json must exist"
+    data = json.loads(auth_file.read_text(encoding="utf-8"))
+    assert len(data) == 1000, f"Expected 1,000 samples, got {len(data)}"
+
+    classes = [item["ground_truth_sentiment"] for item in data]
+    assert classes.count("negative") >= 300
+    assert classes.count("neutral") >= 300
+    assert classes.count("positive") >= 300
+
+    required_keys = {"sample_id", "text", "ground_truth_sentiment", "label_numeric", "star_rating", "product", "country", "source_platform"}
+    for item in data[:20]:
+        assert required_keys.issubset(item.keys())
+        assert item["label_numeric"] in (0, 1, 2)
+
+
+def test_domain_generalization_and_lexical_diversity():
+    """Verify domain generalization splits and lexical diversity calculation."""
+    from evaluate_model import audit_lexical_diversity, evaluate_domain_generalization
+    import numpy as np
+
+    auth_sample = [
+        {"product": "iPhone 16 Pro", "country": "US", "source_platform": "amazon.com", "label_numeric": 2},
+        {"product": "iPhone 14", "country": "BR", "source_platform": "ebay.com", "label_numeric": 0},
+        {"product": "iPhone 15", "country": "JP", "source_platform": "flipkart.com", "label_numeric": 1},
+        {"product": "iPhone 12", "country": "AE", "source_platform": "gsmarena.com", "label_numeric": 2},
+    ]
+    pipe_preds = np.array([2, 0, 1, 2])
+    gen = evaluate_domain_generalization(auth_sample, pipe_preds)
+    assert "geographic_generalization" in gen
+    assert "platform_generalization" in gen
+    assert "product_generation_generalization" in gen
+
+    syn = ["Great phone with good battery.", "Great phone with good battery."]
+    auth = ["Phenomenal camera sensor and titanium finish.", "Overheating and severe battery throttling."]
+    audit = audit_lexical_diversity(syn, auth)
+    assert "synthetic_training_corpus" in audit
+    assert "authentic_benchmark_corpus" in audit
+    assert "type_token_ratio_ttr" in audit["authentic_benchmark_corpus"]
+
+
+def test_transformer_efficiency_matrix():
+    """Verify BiLSTM vs DistilBERT architectural comparison metrics."""
+    from evaluate_model import generate_transformer_efficiency_matrix
+
+    b_metrics = {"accuracy": 0.725, "macro_f1": 0.722}
+    d_metrics = {"accuracy": 0.824, "macro_f1": 0.819}
+    matrix = generate_transformer_efficiency_matrix(b_metrics, d_metrics)
+    assert "architectural_efficiency_analysis" in matrix
+    analysis = matrix["architectural_efficiency_analysis"]
+    assert "Bidirectional LSTM (Our System)" in analysis
+    assert "DistilBERT-base-uncased (Transformer)" in analysis
+    assert "efficiency_gains" in analysis
+
+
+
 
 
 

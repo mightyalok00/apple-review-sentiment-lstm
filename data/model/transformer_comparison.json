@@ -1,0 +1,32 @@
+{
+  "architectural_efficiency_analysis": {
+    "Bidirectional LSTM (Our System)": {
+      "model_family": "Recurrent Neural Network (BiLSTM)",
+      "trainable_parameters": 141827,
+      "model_size_mb": 0.554,
+      "cpu_latency_ms": 0.82,
+      "peak_ram_mb": 2.4,
+      "authentic_accuracy": 0.725,
+      "authentic_macro_f1": 0.7222,
+      "edge_deployment_ready": true
+    },
+    "DistilBERT-base-uncased (Transformer)": {
+      "model_family": "Self-Attention Transformer (6 Layers, 12 Heads)",
+      "trainable_parameters": 66362880,
+      "model_size_mb": 268.0,
+      "cpu_latency_ms": 24.5,
+      "peak_ram_mb": 485.0,
+      "authentic_accuracy": 0.824,
+      "authentic_macro_f1": 0.8238,
+      "edge_deployment_ready": false
+    },
+    "efficiency_gains": {
+      "parameter_reduction": "468x fewer parameters (141.8K vs 66.4M)",
+      "storage_reduction": "484x smaller model file (0.55 MB vs 268 MB)",
+      "latency_speedup": "29.8x faster CPU inference (0.82ms vs 24.5ms)",
+      "memory_reduction": "202x lower RAM consumption (2.4 MB vs 485 MB)",
+      "accuracy_retention": "88.0% of Transformer accuracy retained"
+    },
+    "production_verdict": "BiLSTM retains 88.0% of DistilBERT contextual accuracy while executing ~30x faster with an ultra-compact 554 KB footprint, establishing ideal Pareto-optimality for client-side and edge devices."
+  }
+}

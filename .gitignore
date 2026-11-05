@@ -39,3 +39,4 @@ Thumbs.db
 !/data/reviews.parquet
 !/data/dataset_manifest.json
 !/data/workflow_history.json
+!/data/authentic_reviews_eval.json

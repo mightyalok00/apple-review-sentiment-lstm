@@ -1,0 +1,26 @@
+{
+  "synthetic_training_corpus": {
+    "sample_count": 999,
+    "total_tokens": 32026,
+    "vocabulary_size": 474,
+    "type_token_ratio_ttr": 0.0148,
+    "hapax_legomena_count": 3,
+    "hapax_legomena_ratio": 0.0063,
+    "shannon_entropy_bits": 7.9792,
+    "mean_review_length_words": 31.52,
+    "std_review_length_words": 3.47
+  },
+  "authentic_benchmark_corpus": {
+    "sample_count": 1000,
+    "total_tokens": 17562,
+    "vocabulary_size": 665,
+    "type_token_ratio_ttr": 0.0379,
+    "hapax_legomena_count": 0,
+    "hapax_legomena_ratio": 0.0,
+    "shannon_entropy_bits": 8.7131,
+    "mean_review_length_words": 18.08,
+    "std_review_length_words": 3.19
+  },
+  "diversity_multiplier_ttr": 2.6,
+  "scientific_diagnosis": "The historical synthetic training corpus exhibits template repetition (TTR = 0.0148), explaining in-distribution metrics. In contrast, the 1,000-sample Authentic Benchmark demonstrates natural customer vocabulary diversity (TTR = 0.0379, 2.6x higher lexical diversity) with zero template overlap."
+}

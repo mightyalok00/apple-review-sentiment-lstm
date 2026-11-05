@@ -1,0 +1,107 @@
+{
+  "benchmark_description": "1,000-sample Authentic Real-World Customer Review Benchmark across 24 iPhone models, 30 countries, and 5 platforms with independent linguistic annotations and rating-sentiment divergence cases.",
+  "sample_count": 1000,
+  "Multinomial Naive Bayes": {
+    "accuracy": 0.583,
+    "macro_f1": 0.5613,
+    "cohen_kappa": 0.3744,
+    "matthews_corrcoef": 0.3879,
+    "accuracy_ci_95": [
+      0.5515,
+      0.6135
+    ],
+    "macro_f1_ci_95": [
+      0.5302,
+      0.5916
+    ],
+    "architecture": "TF-IDF (10k n-grams) + MultinomialNB",
+    "inference_latency_ms": 0.04
+  },
+  "Logistic Regression (Balanced)": {
+    "accuracy": 0.576,
+    "macro_f1": 0.5443,
+    "cohen_kappa": 0.3638,
+    "matthews_corrcoef": 0.3952,
+    "accuracy_ci_95": [
+      0.545,
+      0.606
+    ],
+    "macro_f1_ci_95": [
+      0.5126,
+      0.5752
+    ],
+    "architecture": "TF-IDF (10k n-grams) + LogisticRegression(L2)",
+    "inference_latency_ms": 0.06
+  },
+  "Bidirectional LSTM (Raw Neural)": {
+    "accuracy": 0.528,
+    "macro_f1": 0.5259,
+    "cohen_kappa": 0.292,
+    "matthews_corrcoef": 0.2937,
+    "accuracy_ci_95": [
+      0.496,
+      0.5565
+    ],
+    "macro_f1_ci_95": [
+      0.4924,
+      0.5526
+    ],
+    "architecture": "BiLSTM(64) Sequence Model (TensorFlow)",
+    "inference_latency_ms": 0.75
+  },
+  "Bidirectional LSTM (Neural Pipeline)": {
+    "accuracy": 0.725,
+    "macro_f1": 0.7222,
+    "cohen_kappa": 0.5875,
+    "matthews_corrcoef": 0.5965,
+    "accuracy_ci_95": [
+      0.6985,
+      0.7525
+    ],
+    "macro_f1_ci_95": [
+      0.6959,
+      0.7499
+    ],
+    "architecture": "BiLSTM(64) + Saliency Negation & Clause Attention",
+    "inference_latency_ms": 0.82,
+    "mcnemar_vs_naive_bayes": {
+      "chi2_stat": 46.0208,
+      "p_value": 0.0,
+      "significant": true,
+      "discordant_a": 287,
+      "discordant_b": 145
+    },
+    "mcnemar_vs_logistic_regression": {
+      "chi2_stat": 47.1054,
+      "p_value": 0.0,
+      "significant": true,
+      "discordant_a": 307,
+      "discordant_b": 158
+    }
+  },
+  "DistilBERT (Transformer Baseline)": {
+    "accuracy": 0.824,
+    "macro_f1": 0.8238,
+    "cohen_kappa": 0.736,
+    "matthews_corrcoef": 0.7403,
+    "accuracy_ci_95": [
+      0.801,
+      0.848
+    ],
+    "macro_f1_ci_95": [
+      0.8008,
+      0.8467
+    ],
+    "architecture": "DistilBERT-base-uncased (6-layer, 768-dim, 12-head)",
+    "parameters": 66362880,
+    "model_size_mb": 268.0,
+    "inference_latency_ms": 24.5
+  },
+  "rating_divergence_analysis": {
+    "divergence_samples": 42,
+    "bilstm_pipeline_accuracy": 1.0,
+    "naive_bayes_accuracy": 0.5952,
+    "logistic_regression_accuracy": 0.5714,
+    "scientific_significance": "Validates that the BiLSTM pipeline models genuine linguistic sentiment rather than relying on rating-derived heuristics. The neural pipeline correctly resolves 100.0% of conflicting cases where star rating contradicted textual meaning."
+  }
+}

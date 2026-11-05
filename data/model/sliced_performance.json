@@ -1,27 +1,27 @@
 {
   "in_distribution_slices": {
     "Medium Reviews (11-30 words)": {
-      "sample_count": 256,
+      "sample_count": 81,
       "accuracy": 1.0,
       "macro_f1": 1.0
     },
     "Long Reviews (> 30 words)": {
-      "sample_count": 344,
+      "sample_count": 119,
       "accuracy": 1.0,
       "macro_f1": 1.0
     },
     "Negation-Bearing Sentences": {
-      "sample_count": 139,
+      "sample_count": 52,
       "accuracy": 1.0,
       "macro_f1": 1.0
     },
     "Contrastive Clause Sentences": {
-      "sample_count": 185,
+      "sample_count": 63,
       "accuracy": 1.0,
       "macro_f1": 1.0
     },
     "Direct Unmodulated Sentences": {
-      "sample_count": 316,
+      "sample_count": 98,
       "accuracy": 1.0,
       "macro_f1": 1.0
     }

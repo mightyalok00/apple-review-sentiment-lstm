@@ -39,8 +39,13 @@
   "artifacts_checksums": {
     "review_lstm_keras_sha256": "33946a91ca924df5f3af69641dfd1add731505cac0c34655f3821f6103b3cdc3",
     "tokenizer_json_sha256": "eae4ebb7244569aa39899a9dc2d2a525f399837f541b0749258c6da49e40103a",
-    "evaluation_report_json_sha256": "48fed0b693752a9fd0f81605f822d8fd70b23feaf9e4171189d0f80f18c9de78",
-    "baseline_comparison_json_sha256": "21db1aae9eae47965b9d9802e2ddf899cae82f1da066a2d8bc595a395f543ff7",
+    "evaluation_report_json_sha256": "16413c98dca775b56eed3481ab132a51adbcb7a62ad8a8274dc35c20e56a501b",
+    "baseline_comparison_json_sha256": "a772a26c7c54e3ea161936261ce5428b3afa6e6faf99643a29f36e7dc3cbc228",
+    "authentic_benchmark_results_json_sha256": "d908e6bf6837e57093229fad6fbb7d211313c201885ee55ac9c88b4c82c35d28",
+    "generalization_benchmark_json_sha256": "929f742d9a0b1c017f2de367b81c867df0529fbc181d7a297a087ac17e3250d3",
+    "lexical_diversity_audit_json_sha256": "bf6103c5884a2275edb73a96d0b12ed630493952fe6d8b91eb26d7e110224dd2",
+    "transformer_comparison_json_sha256": "b163d9a7eeae9d1dc60e1103352f301cd6162fa3a7f248b676f825c97efb7110",
+    "authentic_reviews_eval_json_sha256": "afc9cfb8e1875847a814e6a38c3a498122d132936d29c22f79004c1e9475b81b",
     "dataset_manifest_json_sha256": "34b1462cf5921d0d170da1e2bec88fed4fe9da1117419eb8edccde0e6fcc3351"
   },
   "total_execution_seconds": 43.68
