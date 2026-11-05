@@ -73,4 +73,3 @@ make workflow-run
 | File | Purpose | Trigger Events |
 | :--- | :--- | :--- |
 | [`ci.yml`](file:///c:/Users/Alok%20Agarwal/OneDrive/Desktop/alokkkk-main/.github/workflows/ci.yml) | End-to-end testing, syntax verification, model evaluation benchmarks, reproducibility manifest, and pipeline orchestration | `push`, `pull_request`, `workflow_dispatch` (Manual) |
-
